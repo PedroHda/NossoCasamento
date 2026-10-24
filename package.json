@@ -1,0 +1,19 @@
+{
+  "name": "nosso-casamento",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Um espaço para planejar o nosso casamento, detalhe por detalhe.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "devDependencies": {
+    "vite": "^7.3.1"
+  }
+}
