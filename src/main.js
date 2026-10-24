@@ -1,4 +1,8 @@
 import "./style.css";
+import { Capacitor } from "@capacitor/core";
+import { App as NativeApp } from "@capacitor/app";
+import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
+import { Share } from "@capacitor/share";
 import { icon, logo } from "./icons.js";
 import {
   STORAGE_KEY,
@@ -444,14 +448,36 @@ function confirmAction(title, description, label, onConfirm) {
   );
 }
 
-function exportBackup() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], {
+async function exportBackup() {
+  const content = JSON.stringify(state, null, 2);
+  const filename = `nosso-casamento-backup-${today()}.json`;
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const file = await Filesystem.writeFile({
+        path: filename,
+        data: content,
+        directory: Directory.Cache,
+        encoding: Encoding.UTF8,
+      });
+      await Share.share({
+        title: "Backup do Nosso Casamento",
+        dialogTitle: "Guardar nosso planejamento",
+        files: [file.uri],
+      });
+      toast("Backup preparado para compartilhar ou salvar.");
+    } catch (error) {
+      const cancelled = /cancel|canceled|cancelled|aborted/i.test(error.message || "");
+      toast(cancelled ? "Compartilhamento cancelado. Seus dados continuam salvos." : "Não foi possível exportar o backup. Tente novamente.", !cancelled);
+    }
+    return;
+  }
+  const blob = new Blob([content], {
     type: "application/json",
   });
   const url = URL.createObjectURL(blob);
   const link = Object.assign(document.createElement("a"), {
     href: url,
-    download: `nosso-casamento-backup-${today()}.json`,
+    download: filename,
   });
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
@@ -724,3 +750,18 @@ window.addEventListener("storage", (event) => {
 
 render();
 setInterval(updateCountdown, 1000);
+
+if (Capacitor.isNativePlatform()) {
+  NativeApp.addListener("backButton", async () => {
+    if (dialog.open) {
+      dialog.close();
+    } else if (document.body.classList.contains("menu-open")) {
+      document.body.classList.remove("menu-open");
+      syncMenu();
+    } else if (route !== "overview") {
+      location.hash = "overview";
+    } else {
+      await NativeApp.minimizeApp();
+    }
+  });
+}

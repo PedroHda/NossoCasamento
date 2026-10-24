@@ -1,0 +1,15 @@
+{
+  "appId": "io.github.pedrohda.nossocasamento",
+  "appName": "Nosso Casamento",
+  "webDir": "dist",
+  "android": {
+    "backgroundColor": "#f7f8f5",
+    "minWebViewVersion": 110
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "native",
+      "style": "DARK"
+    }
+  }
+}

@@ -15,6 +15,23 @@ O visual combina **laranja, branco, azul e verde**, inspirado nas referências d
 
 ## Funcionalidades
 
+### Aplicativo Android
+
+**[Baixar o APK de demonstração (4,16 MB)](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-v1.0.0-demo.apk)** · [SHA-256](apk/NossoCasamento-v1.0.0-demo.apk.sha256)
+
+O projeto inclui uma versão Android com **Capacitor 8**, nome **Nosso Casamento**, ícone de alianças, tela inicial nas cores do projeto e funcionamento offline. A contagem regressiva e todos os cadastros estão no APK.
+
+Para gerar um APK de demonstração assinado para instalação direta:
+
+```bash
+npm ci
+npm run android:apk
+```
+
+A saída é `releases/NossoCasamento-v1.0.0-demo.apk`, acompanhada do SHA-256. A compilação requer **JDK 21**, **SDK Android 36** e internet na primeira execução. Defina `JAVA_HOME` e `ANDROID_HOME` caso as ferramentas não sejam detectadas.
+
+Veja o [guia Android](docs/android.md) para instalar, recompilar e entender o armazenamento e a assinatura do APK.
+
 | Área              | O que você pode fazer                                                                                                                                |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Visão geral**   | Consultar contagem regressiva, orçamento, valores pagos, confirmações, progresso das tarefas, gráficos e próximos passos.                            |
@@ -121,15 +138,21 @@ Se houver erro de armazenamento, a interface avisa. Mantenha backups antes de li
 - **CSS `conic-gradient`** para a rosca de categorias.
 - **`Intl`** para datas, moeda brasileira e fuso horário.
 - **Node.js Test Runner**, sem dependências adicionais de teste.
-- **DM Sans e Manrope**, via Google Fonts, com fontes locais de fallback.
+- **DM Sans e Manrope**, incorporadas localmente pelo Fontsource para funcionar offline.
+- **Capacitor 8**, para empacotar a interface como aplicativo Android.
 
 ```text
 NossoCasamento/
+├── android/                # Projeto nativo Android e Gradle wrapper
+├── capacitor.config.json   # Identidade e configuração do aplicativo
 ├── docs/
 │   ├── preview-desktop.jpg  # Captura real do painel
 │   └── preview-mobile.jpg   # Captura real no celular
 ├── public/
+│   ├── licenses/           # Licenças das fontes incorporadas
 │   └── favicon.svg         # Ícone de alianças
+├── scripts/
+│   └── build-android.mjs   # Compilação do APK e geração de checksum
 ├── src/
 │   ├── icons.js            # Ícones SVG e marca
 │   ├── main.js             # Páginas, formulários, navegação e persistência
@@ -145,7 +168,7 @@ NossoCasamento/
 └── README.md
 ```
 
-Dados locais de usuários, `node_modules`, `.env` e `dist/` não são versionados. As fontes são o único recurso externo carregado pela interface; os fallbacks mantêm o aplicativo utilizável se elas não estiverem disponíveis.
+Dados locais de usuários, `node_modules`, `.env`, `dist/`, caches de compilação, caminhos locais do SDK e chaves de assinatura não são versionados. As fontes e os assets estão incorporados ao build; a interface funciona sem carregar recursos externos.
 
 ## Identidade visual
 
@@ -162,13 +185,16 @@ As variáveis principais estão no início de `src/style.css`. O layout inclui m
 
 ## Comandos e validação
 
-| Comando           | Finalidade                                              |
-| ----------------- | ------------------------------------------------------- |
-| `npm ci`          | Instalar as versões exatas do lockfile.                 |
-| `npm run dev`     | Servidor de desenvolvimento com atualização automática. |
-| `npm test`        | Testes das regras de negócio.                           |
-| `npm run build`   | Build otimizado em `dist/`.                             |
-| `npm run preview` | Servir o build localmente para conferência.             |
+| Comando                | Finalidade                                              |
+| ---------------------- | ------------------------------------------------------- |
+| `npm ci`               | Instalar as versões exatas do lockfile.                 |
+| `npm run dev`          | Servidor de desenvolvimento com atualização automática. |
+| `npm test`             | Testes das regras de negócio.                           |
+| `npm run build`        | Build otimizado em `dist/`.                             |
+| `npm run preview`      | Servir o build localmente para conferência.             |
+| `npm run android:sync` | Atualizar a interface no projeto Android.               |
+| `npm run android:apk`  | Gerar um APK de demonstração com SHA-256.               |
+| `npm run android:open` | Abrir no Android Studio.                                |
 
 ```bash
 npm test
