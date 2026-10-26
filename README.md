@@ -1,55 +1,14 @@
 # Nosso Casamento 💍
 
-**Cada detalhe, mais perto do sim.** Um painel para organizar o casamento de **24 de julho de 2027**, com contagem regressiva em tempo real, orçamento, convidados, checklist e fornecedores.
+**Cada detalhe, mais perto do sim.** Aplicativo para organizar o casamento, com contagem regressiva inicial para **24/07/2027**, orçamento, convidados e uma agenda do grande dia. A interface usa **laranja, branco, azul e verde**, em português e com layout para celular e computador.
 
-O visual combina **laranja, branco, azul e verde**, inspirado nas referências de planejamento de casamento e dashboard financeiro. A interface está em português do Brasil e se adapta a computador, tablet e celular.
+![Painel do Nosso Casamento](docs/preview-desktop.jpg)
 
-![Visão geral do Nosso Casamento](docs/preview-desktop.jpg)
+## Android e acesso local
 
-<details>
-<summary>Ver a versão para celular</summary>
+**[Baixar APK v2.0.0 de demonstração](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-v2.0.0-demo.apk)** · [SHA-256](apk/NossoCasamento-v2.0.0-demo.apk.sha256) · [Guia de instalação e compilação](docs/android.md)
 
-<img src="docs/preview-mobile.jpg" width="320" alt="Visão geral do Nosso Casamento em uma tela de celular" />
-
-</details>
-
-## Funcionalidades
-
-### Aplicativo Android
-
-**[Baixar o APK de demonstração (4,16 MB)](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-v1.0.0-demo.apk)** · [SHA-256](apk/NossoCasamento-v1.0.0-demo.apk.sha256)
-
-O projeto inclui uma versão Android com **Capacitor 8**, nome **Nosso Casamento**, ícone de alianças, tela inicial nas cores do projeto e funcionamento offline. A contagem regressiva e todos os cadastros estão no APK.
-
-Para gerar um APK de demonstração assinado para instalação direta:
-
-```bash
-npm ci
-npm run android:apk
-```
-
-A saída é `releases/NossoCasamento-v1.0.0-demo.apk`, acompanhada do SHA-256. A compilação requer **JDK 21**, **SDK Android 36** e internet na primeira execução. Defina `JAVA_HOME` e `ANDROID_HOME` caso as ferramentas não sejam detectadas.
-
-Veja o [guia Android](docs/android.md) para instalar, recompilar e entender o armazenamento e a assinatura do APK.
-
-| Área              | O que você pode fazer                                                                                                                                |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Visão geral**   | Consultar contagem regressiva, orçamento, valores pagos, confirmações, progresso das tarefas, gráficos e próximos passos.                            |
-| **Orçamento**     | Cadastrar, editar e excluir despesas; definir orçamento; registrar pagamentos parciais; acompanhar saldo e vencimentos; buscar e filtrar por status. |
-| **Convidados**    | Organizar nomes por grupo, registrar acompanhantes e atualizar a confirmação de cada convite.                                                        |
-| **Checklist**     | Criar tarefas com categoria e prazo, concluir ou reabrir tarefas e filtrar pendentes e concluídas.                                                   |
-| **Fornecedores**  | Guardar nome, categoria, contato, observações e etapa da contratação.                                                                                |
-| **Configurações** | Personalizar nome do casal, local, orçamento e meta de convidados; exportar/importar backups e começar um planejamento vazio.                        |
-| **Busca global**  | Encontrar registros pelo botão de busca ou pelo atalho `/`.                                                                                          |
-
-Os cadastros têm validação, confirmação antes de excluir e mensagens de retorno. A interface inclui navegação por teclado, foco visível, janelas com `<dialog>`, link para pular ao conteúdo e respeito à preferência de movimento reduzido.
-
-## Executar localmente
-
-### Pré-requisitos
-
-- **Node.js 22.12 ou superior** e npm.
-- Navegador moderno com JavaScript, `localStorage`, `<dialog>` e `crypto.randomUUID()`.
+O APK inclui a interface e as fontes, funciona sem internet e usa assinatura de debug para instalação direta. Requer Android 7.0+ e WebView/Chrome 110+. Não foi testado em aparelho físico nesta atualização.
 
 ```bash
 git clone https://github.com/PedroHda/NossoCasamento.git
@@ -58,182 +17,164 @@ npm ci
 npm run dev
 ```
 
-Abra o endereço indicado pelo Vite, normalmente **http://127.0.0.1:5173/**. Se a porta estiver ocupada, o terminal poderá indicar outra.
+Abra o endereço mostrado pelo terminal, normalmente **http://127.0.0.1:5173/**. É necessário **Node.js 22.12+**. Não é preciso banco de dados, chave de API, conta ou arquivo `.env`.
 
-Não é necessário configurar banco de dados, chave de API, `.env` ou conta de usuário.
+## O que está implementado
 
-### Primeiro acesso
+| Área          | Recursos                                                                                                            |
+| ------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Visão geral   | Contagem em tempo real, resumo financeiro, confirmações, progresso, gráficos e próximos prazos.                     |
+| Orçamento     | Estimado versus contratado, vínculo com fornecedor, histórico de pagamentos, saldo e vencimento.                    |
+| Parcelas      | Divisão do saldo em até 36 parcelas mensais, centavos distribuídos corretamente e pagamento vinculado à parcela.    |
+| Comprovantes  | PDF, PNG e JPG guardados localmente, com download e inclusão no backup.                                             |
+| Convidados    | Grupos, contato, limite de acompanhantes, quantidade efetivamente confirmada, restrições alimentares e observações. |
+| Convites      | Convite individual com formulário de resposta e código para importação manual pelo casal.                           |
+| Checklist     | Prazo, responsável, prioridade, conclusão e filtros.                                                                |
+| Fornecedores  | Contato, proposta de preço, etapa da negociação, comparação por categoria/valor e criação de despesa vinculada.     |
+| Cronograma    | Momentos com data, horário, local e observações.                                                                    |
+| Lembretes     | Agenda de tarefas, pagamentos e cronograma; exportação de calendário e notificações locais opcionais no Android.    |
+| Relatórios    | PDF do planejamento, CSV de orçamento/convidados e agenda ICS.                                                      |
+| Configurações | Casal, data, horário, orçamento, meta, local e endereço público dos convites.                                       |
+| Recuperação   | Backup JSON, migração da versão 1, lixeira e botão de desfazer a alteração mais recente.                            |
 
-1. Explore o painel com os **dados de exemplo**. Nomes, despesas e fornecedores iniciais são fictícios.
-2. Abra **Configurações** e personalize nome do casal, orçamento, meta de convidados e local.
-3. Clique em **Começar do zero** para remover os exemplos. Suas preferências são mantidas.
-4. Adicione suas despesas, convidados, tarefas e fornecedores.
-5. Exporte backups regularmente.
+A interface inclui busca global pelo botão ou atalho `/`, filtros, formulários validados, navegação por teclado e foco visível. As janelas usam `<dialog>` e o layout respeita a preferência de movimento reduzido.
 
-O indicador **“Explorando dados de exemplo”** permanece visível até você começar do zero. Editar um exemplo não remove esse indicador automaticamente.
+## Começar a usar
 
-## Contagem regressiva
+1. Explore os **dados de exemplo**, que são fictícios.
+2. Em **Configurações**, personalize o casal, a data, o horário, o local e as metas.
+3. Use **Começar do zero** para remover exemplos e lixeira, preservando as preferências. Exporte uma cópia antes se já fez alterações.
+4. Cadastre fornecedores e despesas; abra **Pagamentos e parcelas** na despesa para registrar o histórico.
+5. Adicione convidados, tarefas e momentos ao cronograma.
+6. Exporte backups regularmente e antes de substituir o planejamento.
 
-O instante de referência é **24/07/2027 às 00:00:00, no horário de Brasília (UTC−03:00)**:
+Editar um exemplo não remove automaticamente o indicador de demonstração. Começar do zero cria o planejamento sem exemplos.
 
-```js
-export const WEDDING_DATE = "2027-07-24";
-export const WEDDING_TIME = "2027-07-24T00:00:00-03:00";
-```
+## Data e regras de cálculo
 
-A atualização acontece a cada segundo. O painel mostra dias completos, horas, minutos e segundos. Ao chegar à data, os números ficam em zero e aparece **“O nosso grande dia chegou!”**. A contagem nunca fica negativa e usa o mesmo instante em qualquer fuso horário. O relógio do dispositivo precisa estar correto.
+A data inicial é **24/07/2027 às 00:00**, mas pode ser alterada nas configurações, sem editar código. A contagem usa o horário de Brasília com offset **UTC−03:00**, atualiza a cada segundo e fica em zero ao chegar ao instante escolhido. O relógio do aparelho precisa estar correto. Os momentos do cronograma têm datas próprias e não são deslocados quando a data do casamento muda.
 
-A data está fixa para este projeto. Para adaptar a outro casamento, altere as constantes em `src/model.js`, os textos da data e o período do gráfico em `src/main.js`, além dos testes correspondentes. A tela de configurações permite consultar a data, mas não alterá-la.
+- **Contratado:** soma dos valores das despesas; **estimado:** soma das estimativas.
+- **Pago:** soma do histórico; **falta pagar:** contratado menos pago.
+- **Disponível:** orçamento menos contratado. Valor negativo indica estouro.
+- Valores são somados em centavos. Um pagamento não pode ultrapassar o total da despesa ou o saldo da parcela escolhida.
+- As parcelas dividem o saldo após os pagamentos avulsos. Vencimentos respeitam o último dia do mês: 31/01 → 28/02 → 31/03, por exemplo.
+- Depois de registrar pagamentos vinculados, o parcelamento é preservado. Para refazê-lo, remova esses pagamentos conscientemente ou ajuste o cadastro.
+- O gráfico considera pagamentos nas datas registradas e saldos nos vencimentos, sem duplicar parcelas. O período se adapta aos dados, inclusive depois do casamento, com até 12 pontos mensais acumulados.
+- Saldos migrados da versão 1 não possuem data histórica: são identificados como importados e entram no mês atual do gráfico.
+- Confirmados somam a pessoa principal e os acompanhantes efetivamente confirmados. Quando essa quantidade ainda não foi informada, usam o limite do convite, preservando os dados antigos.
+- Tarefas concluídas saem dos lembretes; parcelas pagas também. Prazos vencidos permanecem visíveis enquanto pendentes.
 
-## Regras dos indicadores
+## Convites sem servidor
 
-### Orçamento
+O fluxo de confirmação desta versão é **manual**, pois não há banco ou backend:
 
-- **Total contratado:** soma do valor total das despesas.
-- **Já pago:** soma dos pagamentos registrados.
-- **Falta pagar:** contratado menos pago.
-- **Disponível:** orçamento menos contratado; um saldo negativo sinaliza excesso.
-- **Pago:** pagamento igual ao total. **Parcial:** pagamento maior que zero e menor que o total. **Pendente:** nenhum pagamento registrado.
-- Pagamentos não podem ser negativos nem ultrapassar o valor da despesa.
-- Totais financeiros são calculados em centavos para evitar erros comuns de ponto flutuante.
+1. Cadastre o convidado e a quantidade permitida de acompanhantes.
+2. Para enviar um link a outro aparelho, publique o site em uma hospedagem estática e configure seu endereço HTTPS em **Configurações**. `localhost` só abre no próprio aparelho; nessa situação o botão de copiar para enviar fica desativado, mas o teste do convite funciona.
+3. Abra o convite individual e copie o link para enviá-lo pelo canal de sua preferência.
+4. O convidado preenche presença, acompanhantes e restrições, e envia ao casal o código gerado.
+5. Em **Convidados → Importar confirmação**, cole o código, confira e aplique.
 
-O gráfico azul mostra **compromissos acumulados por mês de vencimento**, de outubro de 2026 a julho de 2027. Despesas sem vencimento entram em julho de 2027. É uma visualização do planejamento, não um extrato ou histórico de pagamentos. Despesas após julho de 2027 continuam nos totais e na tabela, mas ficam fora do período do gráfico.
+O formulário não envia a resposta automaticamente. O link contém somente os dados daquele convite, sem orçamento ou restante da lista. O código identifica o convite, mas **não autentica a identidade da pessoa**. Compartilhe o link individual com cuidado. Não há envio automático de mensagens nem publicação de site habilitada pelo push.
 
-A rosca considera todas as categorias com despesas e mostra as quatro maiores na legenda. Consulte todos os registros na tabela de orçamento.
+## Dados locais e backups
 
-### Convidados e tarefas
+**Nenhum banco de dados foi implementado.** A única persistência é o `localStorage`, na chave `nosso-casamento:v2`. Não há login, colaboração ou sincronização entre celulares. Código, APK e documentação vão para o Git; os cadastros não são enviados pelo aplicativo ao repositório ou a um servidor.
 
-- Cada convite representa o convidado principal **mais os acompanhantes**.
-- A confirmação se aplica a todas as pessoas daquele convite.
-- A meta de convidados é independente da quantidade cadastrada.
-- Confirmações são registradas manualmente; o aplicativo não envia convites nem coleta RSVP público.
-- O progresso é a porcentagem de tarefas concluídas, arredondada para um inteiro.
-- Tarefas pendentes com prazo anterior à data atual em Brasília são sinalizadas como atrasadas.
+O armazenamento pertence ao navegador/perfil/origem (protocolo, endereço e porta). O APK tem seu próprio armazenamento. Trocar de endereço ou aparelho não transfere os dados. Limpar dados, desinstalar ou usar modo privado pode apagá-los.
 
-## Dados, privacidade e backups
+### Migração e conflitos
 
-O planejamento é salvo no **`localStorage` do navegador**, na chave `nosso-casamento:v1`. Ele persiste ao recarregar e reabrir a página, desde que o navegador mantenha esse armazenamento.
+- O primeiro acesso à versão 2 migra a chave `nosso-casamento:v1` quando ainda não existe uma versão 2.
+- A chave antiga é mantida intacta para recuperação; alterações novas são gravadas somente na versão 2.
+- IDs, nomes, valores pagos e confirmações antigos são preservados. Datas desconhecidas de pagamentos não são inventadas.
+- Abas da mesma origem recebem atualizações. Revisões e Web Locks, quando disponíveis, impedem a gravação silenciosa sobre alterações mais recentes. Sem Web Locks, a proteção é limitada à verificação de revisão.
+- Dados inválidos não são trocados automaticamente por exemplos: uma tela de recuperação oferece exportação bruta e importação.
 
-**Não há backend, login ou sincronização automática entre dispositivos.** O GitHub recebe o código do projeto; os cadastros pessoais não são enviados ao repositório pelo aplicativo. Abas da mesma origem recebem as atualizações salvas por outra aba.
+### Exportar e restaurar
 
-O armazenamento é específico do navegador, perfil e origem — protocolo, domínio e porta. Abrir o aplicativo em outra porta ou outro endereço cria um espaço separado. Limpar os dados do site, usar navegação privada ou bloquear o armazenamento pode apagar dados ou impedir a gravação.
+Em **Configurações**, exporte o JSON e guarde uma cópia fora do aplicativo. Ele inclui preferências, registros, pagamentos, comprovantes e lixeira, **sem criptografia**. Para restaurar, importe um backup v1 ou v2 de até **6 MB** e confirme a substituição. A importação substitui o planejamento inteiro; não mescla registros.
 
-### Exportar e importar
+São validados versões, datas, valores, referências e IDs. Cada lista aceita até 10.000 registros; a lixeira aceita 100. Quando estiver cheia, exporte um backup e esvazie-a para continuar excluindo registros. Desfazer fica disponível por 12 segundos e apenas enquanto não houver alteração posterior; a lixeira permite recuperar cadastros depois disso.
 
-1. Em **Configurações → Exportar backup**, baixe um arquivo como `nosso-casamento-backup-2026-10-24.json`.
-2. Guarde o arquivo; ele contém preferências e todos os cadastros e **não é criptografado**.
-3. Para restaurar, use **Importar backup** e selecione um JSON exportado pelo aplicativo, de até **5 MB**.
-4. Confira as quantidades de registros e confirme a substituição.
+### Limites dos comprovantes
 
-A importação **substitui** os dados atuais, sem mesclar registros. Exporte o planejamento atual antes, se quiser preservá-lo. O aplicativo valida versão, listas, valores, datas, status e identificadores antes de salvar. Cada lista aceita até 10.000 registros. Texto de usuário é escapado antes da exibição no HTML.
+PDF, PNG e JPG de até **500 KB por arquivo**, até **10 por despesa** e **1,5 MB de arquivos no planejamento inteiro**, incluindo a lixeira. O conteúdo e a assinatura básica do formato são conferidos. O navegador pode atingir sua própria cota antes desses limites, dependendo dos outros dados; uma falha de gravação preserva a versão anterior. O PDF do relatório não incorpora os comprovantes; use o backup para transportá-los.
 
-Se houver erro de armazenamento, a interface avisa. Mantenha backups antes de limpar dados ou trocar de navegador/dispositivo.
+## Preparado para um banco futuro
 
-## Tecnologias e estrutura
+A interface usa o contrato assíncrono `PlanningRepository`; hoje ele é implementado por `LocalPlanningRepository`. A escolha do adaptador está em `src/data/services.ts`. O `PlanningProvider` também recebe serviços por injeção, permitindo substituir o repositório sem reescrever as telas.
 
-- **JavaScript com módulos ES**, sem framework de interface.
-- **Vite 7** para desenvolvimento e build.
-- **HTML e CSS responsivo**, com Grid, Flexbox e variáveis de cores.
-- **SVG** para ícones, marca, ilustração botânica e gráfico de linha.
-- **CSS `conic-gradient`** para a rosca de categorias.
-- **`Intl`** para datas, moeda brasileira e fuso horário.
-- **Node.js Test Runner**, sem dependências adicionais de teste.
-- **DM Sans e Manrope**, incorporadas localmente pelo Fontsource para funcionar offline.
-- **Capacitor 8**, para empacotar a interface como aplicativo Android.
+Existem contratos para sessão (`IdentityGateway`) e convite de membros (`CollaborationGateway`), ainda sem implementação. O modelo tem IDs, versão de schema, revisão e timestamps para apoiar uma futura API. **Não foram adicionados SDK de banco, credenciais, tabelas remotas ou login fictício.**
+
+Veja [arquitetura e integração futura](docs/architecture.md) para os limites atuais e os passos necessários antes de habilitar colaboração.
+
+## Stack e estrutura
+
+- **React 19 + TypeScript** para componentes, estado e contratos.
+- **Vite 7**, CSS responsivo, SVG e fontes locais DM Sans/Manrope.
+- **Zod 4** para validar cadastros e backups.
+- **jsPDF + AutoTable** para relatório PDF; CSV e ICS gerados localmente.
+- **Capacitor 8** com plugins de arquivos, compartilhamento, eventos do aplicativo e notificações locais.
+- **Node.js Test Runner**, sem servidor de testes externo.
 
 ```text
-NossoCasamento/
-├── android/                # Projeto nativo Android e Gradle wrapper
-├── capacitor.config.json   # Identidade e configuração do aplicativo
-├── docs/
-│   ├── preview-desktop.jpg  # Captura real do painel
-│   └── preview-mobile.jpg   # Captura real no celular
-├── public/
-│   ├── licenses/           # Licenças das fontes incorporadas
-│   └── favicon.svg         # Ícone de alianças
-├── scripts/
-│   └── build-android.mjs   # Compilação do APK e geração de checksum
-├── src/
-│   ├── icons.js            # Ícones SVG e marca
-│   ├── main.js             # Páginas, formulários, navegação e persistência
-│   ├── model.js            # Exemplos, cálculos e validação de backups
-│   └── style.css           # Estilos e layouts responsivos
-├── tests/
-│   └── model.test.js       # Regras de negócio
-├── .gitignore
-├── index.html
-├── package.json
-├── package-lock.json
-├── vite.config.js
-└── README.md
+src/
+├── app/                 # Navegação React e estado com repositório injetável
+├── components/          # Formulários, janelas, pagamentos e convites
+├── data/                # Contratos e adaptador local
+├── domain/              # Schema v2, migração e regras de planejamento
+├── services/            # Arquivos, PDF/CSV/ICS, convites e notificações
+├── views/               # Telas do aplicativo
+├── main.tsx             # Entrada React e convite público
+├── model.js             # Modelo legado para migração v1
+├── icons.js             # Ícones e marca SVG
+├── style.css            # Identidade visual e layout original
+└── improvements.css     # Layouts e componentes da versão 2
+android/                 # Projeto nativo e Gradle wrapper
+apk/                     # APKs de demonstração e checksums
+scripts/build-android.mjs
+tests/                  # Regras, migração, armazenamento e exportações
 ```
 
-Dados locais de usuários, `node_modules`, `.env`, `dist/`, caches de compilação, caminhos locais do SDK e chaves de assinatura não são versionados. As fontes e os assets estão incorporados ao build; a interface funciona sem carregar recursos externos.
+Cores principais: verde `#193e33`/`#244e40`, laranja `#eb8952`, branco `#ffffff`, azul `#799fcf` e fundo `#f7f8f5`.
 
-## Identidade visual
-
-| Cor            | Valor principal | Uso                             |
-| -------------- | --------------- | ------------------------------- |
-| Verde profundo | `#193e33`       | Menu e identidade               |
-| Verde          | `#244e40`       | Botões, títulos e indicadores   |
-| Laranja        | `#eb8952`       | Destaques e contagem regressiva |
-| Branco         | `#ffffff`       | Cards e superfícies             |
-| Azul           | `#799fcf`       | Gráfico e indicadores de apoio  |
-| Fundo claro    | `#f7f8f5`       | Área principal                  |
-
-As variáveis principais estão no início de `src/style.css`. O layout inclui menu recolhível, cartões reorganizados e tabelas com rolagem horizontal própria em telas menores.
-
-## Comandos e validação
+## Comandos e verificações
 
 | Comando                | Finalidade                                              |
 | ---------------------- | ------------------------------------------------------- |
-| `npm ci`               | Instalar as versões exatas do lockfile.                 |
-| `npm run dev`          | Servidor de desenvolvimento com atualização automática. |
-| `npm test`             | Testes das regras de negócio.                           |
-| `npm run build`        | Build otimizado em `dist/`.                             |
-| `npm run preview`      | Servir o build localmente para conferência.             |
-| `npm run android:sync` | Atualizar a interface no projeto Android.               |
-| `npm run android:apk`  | Gerar um APK de demonstração com SHA-256.               |
-| `npm run android:open` | Abrir no Android Studio.                                |
+| `npm ci`               | Instalar as versões do lockfile.                        |
+| `npm run dev`          | Abrir servidor local com atualização automática.        |
+| `npm run typecheck`    | Conferir os tipos TypeScript.                           |
+| `npm test`             | Executar 33 testes de regras, migração e armazenamento. |
+| `npm run build`        | Conferir tipos e gerar `dist/`.                         |
+| `npm run preview`      | Servir o build localmente.                              |
+| `npm run android:sync` | Gerar build web e sincronizar com Android.              |
+| `npm run android:apk`  | Compilar APK debug e checksum em `releases/`.           |
+| `npm run android:open` | Abrir o projeto no Android Studio.                      |
 
 ```bash
 npm test
 npm run build
-npm run preview
+npm run android:apk
 ```
 
-Os testes cobrem o instante da contagem regressiva, a chegada da data, cálculos financeiros, totais de convidados, progresso, listas vazias, status de pagamento, validação de backups e escape de HTML.
+O APK requer **JDK 21, SDK Android 36** e acesso à internet para baixar dependências na primeira compilação. O script detecta instalações usuais; use `JAVA_HOME` e `ANDROID_HOME` se necessário. Não há chaves de assinatura release no repositório.
 
-A interface também foi conferida no navegador em desktop e em tela de 390 × 844, incluindo formulários, persistência após recarregar e navegação mobile.
+## Publicação web
 
-## Publicação estática
+Publique o conteúdo de **`dist/`** em uma hospedagem estática. Comando de build: `npm run build`; saída: `dist`. Os caminhos relativos (`base: './'`) permitem subpastas, e a navegação por hash dispensa regras de reescrita.
 
-```bash
-npm ci
-npm test
-npm run build
-```
+Um servidor local de desenvolvimento precisa ser iniciado pelo terminal; ele não se torna público com o push. A versão web não instala service worker nesta etapa: o APK funciona offline por incorporar os arquivos; reabrir o site web offline depende do cache do navegador.
 
-Publique **o conteúdo de `dist/`** em uma hospedagem estática. Use `npm run build` como comando de build e `dist` como diretório de saída. `base: "./"` gera caminhos relativos, compatíveis com subpastas como `/NossoCasamento/`.
+## Limitações e próximos passos
 
-As páginas usam navegação por hash (`#overview`, `#budget`, etc.), sem precisar de regras especiais de reescrita no servidor.
+- Login do casal, sincronização, armazenamento remoto de arquivos e RSVP automático aguardam um backend.
+- Notificações do aparelho estão no APK e precisam de permissão. São agendados até 50 próximos avisos futuros; ao abrir ou alterar o planejamento a agenda é atualizada. O horário depende das restrições e permissões do Android.
+- A data usa o offset atual de Brasília, UTC−3; não há tabela histórica de horário de verão.
+- Não há integração bancária, cobrança, envio automático de convites ou publicação configurada.
+- Assinatura release, testes em dispositivos e publicação em loja ainda precisam ser feitos para distribuição definitiva.
 
-O push para o GitHub não ativa uma hospedagem automaticamente. Para usar GitHub Pages, configure um fluxo que execute o build e publique `dist/`. O projeto não contém credenciais nem configuração de deploy de um serviço específico.
+## Contribuição
 
-## Limitações atuais
-
-- Planejamento local, sem colaboração entre dispositivos; backups manuais.
-- Sem envio de mensagens, integração bancária, cobranças, upload de contratos ou RSVP público.
-- Fornecedores e despesas são independentes: contratar um fornecedor não cria uma despesa automaticamente.
-- O gráfico financeiro tem o período fixo descrito acima.
-- A contagem considera o início do dia, não um horário específico da cerimônia.
-
-## Contribuir
-
-Crie uma branch, implemente a alteração e execute `npm test` e `npm run build` antes de abrir um pull request. Preserve o português, a paleta e a compatibilidade com os backups da versão 1; mudanças de schema precisam de uma estratégia de migração.
-
-Este repositório ainda não define uma licença de distribuição.
-
----
-
-**24 de julho de 2027. Um dia especial, uma vida inteira juntos.**
+Preserve a paleta, o português e a compatibilidade com backups existentes. Antes de propor mudanças, execute `npm test` e `npm run build`. Alterações de schema precisam de migração e validação. `node_modules`, builds, `.env`, dados pessoais, caches e chaves não são versionados. O repositório ainda não define uma licença de distribuição.
