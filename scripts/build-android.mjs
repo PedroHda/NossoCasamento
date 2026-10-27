@@ -97,7 +97,7 @@ const apk = join(
 const version = JSON.parse(
   readFileSync(join(root, "package.json"), "utf8"),
 ).version;
-const name = `NossoCasamento-v${version}-demo.apk`;
+const name = `NossoCasamento-${version}.apk`;
 const releaseDir = resolve(root, "releases");
 mkdirSync(releaseDir, { recursive: true });
 const destination = join(releaseDir, name);

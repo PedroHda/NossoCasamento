@@ -1,12 +1,14 @@
 # Nosso Casamento para Android
 
-**[Baixar APK v2.0.0 de demonstração](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-v2.0.0-demo.apk)** · [Checksum SHA-256](../apk/NossoCasamento-v2.0.0-demo.apk.sha256)
+**[Baixar APK v2.0.0 de demonstração](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-2.0.0.apk)** · [Checksum SHA-256](../apk/NossoCasamento-2.0.0.apk.sha256)
+
+Os arquivos seguem o padrão `NossoCasamento-<versão>.apk`, sem prefixo `v` ou sufixo no nome. O script de compilação lê a versão do `package.json` e gera o APK e seu `.sha256` com esse padrão.
 
 Inclui contagem inicial para **24/07/2027**, agora com data e horário editáveis, orçamento, pagamentos, parcelas, comprovantes, convidados, checklist, fornecedores, cronograma, relatórios e lembretes. A interface e as fontes estão incorporadas e abrem sem internet.
 
 ## Instalar
 
-1. Baixe `NossoCasamento-v2.0.0-demo.apk` no Android.
+1. Baixe `NossoCasamento-2.0.0.apk` no Android.
 2. Abra o arquivo pelo download ou gerenciador.
 3. Se solicitado, permita a instalação pela origem usada e confirme.
 4. Abra **Nosso Casamento**, com o ícone de alianças.
@@ -39,7 +41,7 @@ npm test
 npm run android:apk
 ```
 
-Se necessário, defina `JAVA_HOME` e `ANDROID_HOME`. O script detecta locais comuns e usa o Gradle wrapper. A saída é `releases/NossoCasamento-v2.0.0-demo.apk` e seu `.sha256`. Para abrir no Android Studio:
+Se necessário, defina `JAVA_HOME` e `ANDROID_HOME`. O script detecta locais comuns e usa o Gradle wrapper. A saída é `releases/NossoCasamento-2.0.0.apk` e seu `.sha256`. Para abrir no Android Studio:
 
 ```bash
 npm run android:sync

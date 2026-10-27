@@ -6,7 +6,7 @@
 
 ## Android e acesso local
 
-**[Baixar APK v2.0.0 de demonstração](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-v2.0.0-demo.apk)** · [SHA-256](apk/NossoCasamento-v2.0.0-demo.apk.sha256) · [Guia de instalação e compilação](docs/android.md)
+**[Baixar APK v2.0.0 de demonstração](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-2.0.0.apk)** · [SHA-256](apk/NossoCasamento-2.0.0.apk.sha256) · [Guia de instalação e compilação](docs/android.md)
 
 O APK inclui a interface e as fontes, funciona sem internet e usa assinatura de debug para instalação direta. Requer Android 7.0+ e WebView/Chrome 110+. Não foi testado em aparelho físico nesta atualização.
 

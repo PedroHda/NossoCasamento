@@ -1,6 +1,6 @@
 # Instalar o Nosso Casamento
 
-Baixe [NossoCasamento-v2.0.0-demo.apk](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-v2.0.0-demo.apk) no Android e abra o arquivo para instalar.
+Baixe [NossoCasamento-2.0.0.apk](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-2.0.0.apk) no Android e abra o arquivo para instalar.
 
 - Android 7.0+ com WebView/Chrome 110+.
 - Nome no celular: **Nosso Casamento**, com ícone de alianças.
@@ -8,7 +8,7 @@ Baixe [NossoCasamento-v2.0.0-demo.apk](https://github.com/PedroHda/NossoCasament
 - Funciona offline e mantém os dados localmente. Não há banco, login ou sincronização entre aparelhos.
 - Convites usam confirmação por código importado manualmente pelo casal.
 - Versão de demonstração com assinatura de debug. Notificações precisam de permissão e ainda devem ser conferidas em um aparelho físico.
-- Confira a integridade usando o arquivo [SHA-256](NossoCasamento-v2.0.0-demo.apk.sha256).
+- Confira a integridade usando o arquivo [SHA-256](NossoCasamento-2.0.0.apk.sha256).
 
 Exporte um backup antes de substituir, desinstalar ou limpar os dados do aplicativo. Os dados iniciais são fictícios; personalize em **Configurações**.
 
