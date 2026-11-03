@@ -28,6 +28,7 @@ const javaHome = [
   process.env.JAVA_HOME,
   firstDirectory("C:/Program Files/Android/openjdk", /^jdk-21/),
   firstDirectory("C:/Program Files/Eclipse Adoptium", /^jdk-21/),
+  "C:/Program Files/Android/Android Studio/jbr",
   "/usr/lib/jvm/java-21-openjdk-amd64",
 ].find((path) => path && existsSync(join(path, "bin", executable("java"))));
 const sdk = [

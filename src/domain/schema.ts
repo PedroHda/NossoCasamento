@@ -15,7 +15,19 @@ export const GUEST_GROUPS = [
   "Trabalho",
   "Outros",
 ] as const;
-export const GUEST_STATUSES = ["Confirmado", "Pendente", "Não vai"] as const;
+export const GUEST_STATUSES = [
+  "Confirmado",
+  "Pendente",
+  "Não vai",
+  "Talvez",
+] as const;
+export const HOUSEHOLD_STATUSES = [
+  "A comprar",
+  "Pesquisando",
+  "Comprado",
+  "Aguardando entrega",
+  "Em casa",
+] as const;
 export const VENDOR_STATUSES = [
   "Em pesquisa",
   "Em negociação",
@@ -181,12 +193,61 @@ export const guestSchema = z
       .max(20)
       .nullable()
       .default(null),
+    familyId: identifier.nullable().default(null),
+    child: z.boolean().default(false),
+    table: optionalText(80).default(""),
   })
   .refine(
     (guest) =>
       guest.confirmedCompanions === null ||
       guest.confirmedCompanions <= guest.companions,
     "Os acompanhantes confirmados ultrapassam o limite do convite.",
+  );
+export const familySchema = z.object({
+  ...base,
+  contact: optionalText(160).default(""),
+  phone: optionalText(80).default(""),
+  table: optionalText(80).default(""),
+  notes: optionalText(1000).default(""),
+  inviteToken: identifier,
+  lastResponseAt: z.union([z.literal(""), timestamp]).default(""),
+});
+export const householdSchema = z
+  .object({
+    ...base,
+    room: text(80),
+    category: text(80),
+    quantity: z.number().int().min(1).max(10000),
+    ownedQuantity: z.number().int().min(0).max(10000),
+    estimatedUnitAmount: currency,
+    status: z.enum(HOUSEHOLD_STATUSES),
+    priority: z.enum(["Essencial", "Importante", "Depois"]),
+    store: optionalText(160).default(""),
+    url: z
+      .string()
+      .max(2000)
+      .refine((value) => {
+        if (!value) return true;
+        try {
+          const url = new URL(value);
+          return (
+            ["http:", "https:"].includes(url.protocol) &&
+            !url.username &&
+            !url.password
+          );
+        } catch {
+          return false;
+        }
+      }, "Use um link HTTP ou HTTPS.")
+      .default(""),
+    purchaseDate: optionalDate.default(""),
+    deliveryDate: optionalDate.default(""),
+    owner: optionalText(80).default("Nós"),
+    notes: optionalText(1000).default(""),
+  })
+  .refine(
+    (item) => item.ownedQuantity <= item.quantity,
+    "A quantidade que já temos não pode superar a quantidade desejada.",
   );
 export const taskSchema = z.object({
   ...base,
@@ -210,8 +271,22 @@ export const eventSchema = z.object({
   time,
   location: optionalText(200),
   notes: optionalText(1000),
+  durationMinutes: z.number().int().min(5).max(1440).default(60),
+  reminderMinutes: z.number().int().min(0).max(43200).nullable().default(null),
 });
 export const trashSchema = z.discriminatedUnion("collection", [
+  z.object({
+    id: identifier,
+    deletedAt: timestamp,
+    collection: z.literal("families"),
+    record: familySchema,
+  }),
+  z.object({
+    id: identifier,
+    deletedAt: timestamp,
+    collection: z.literal("household"),
+    record: householdSchema,
+  }),
   z.object({
     id: identifier,
     deletedAt: timestamp,
@@ -252,6 +327,8 @@ export const settingsSchema = z.object({
   weddingTime: time,
   timeZone: z.literal("America/Sao_Paulo"),
   remindersEnabled: z.boolean(),
+  calendarSyncEnabled: z.boolean().default(false),
+  calendarId: z.string().max(100).default(""),
   reminderDays: z.number().int().min(0).max(30),
   publicUrl: z
     .string()
@@ -282,6 +359,8 @@ export const planSchema = z
     settings: settingsSchema,
     expenses: z.array(expenseSchema).max(10000),
     guests: z.array(guestSchema).max(10000),
+    families: z.array(familySchema).max(2000).default([]),
+    household: z.array(householdSchema).max(10000).default([]),
     tasks: z.array(taskSchema).max(10000),
     vendors: z.array(vendorSchema).max(10000),
     timeline: z.array(eventSchema).max(10000),
@@ -306,6 +385,8 @@ export const planSchema = z
     for (const collection of [
       "expenses",
       "guests",
+      "families",
+      "household",
       "tasks",
       "vendors",
       "timeline",
@@ -318,8 +399,11 @@ export const planSchema = z
     const tokens = new Set<string>();
     for (const guest of [
       ...plan.guests,
+      ...plan.families,
       ...plan.trash.flatMap((item) =>
-        item.collection === "guests" ? [item.record] : [],
+        item.collection === "guests" || item.collection === "families"
+          ? [item.record]
+          : [],
       ),
     ]) {
       if (tokens.has(guest.inviteToken))
@@ -329,6 +413,28 @@ export const planSchema = z
         });
       tokens.add(guest.inviteToken);
     }
+    const families = new Set([
+      ...plan.families.map((item) => item.id),
+      ...plan.trash.flatMap((item) =>
+        item.collection === "families" ? [item.record.id] : [],
+      ),
+    ]);
+    for (const guest of [
+      ...plan.guests,
+      ...plan.trash.flatMap((item) =>
+        item.collection === "guests" ? [item.record] : [],
+      ),
+    ])
+      if (guest.familyId && !families.has(guest.familyId))
+        ctx.addIssue({
+          code: "custom",
+          message: "Família vinculada não encontrada.",
+        });
+    if (plan.settings.calendarSyncEnabled && !plan.settings.calendarId)
+      ctx.addIssue({
+        code: "custom",
+        message: "Escolha um calendário para ativar a conexão com a agenda.",
+      });
     let bytes = 0;
     for (const expense of allExpenses) {
       for (const payment of expense.payments) checkId(payment.id);
@@ -365,6 +471,8 @@ export type Payment = z.infer<typeof paymentSchema>;
 export type Installment = z.infer<typeof installmentSchema>;
 export type Attachment = z.infer<typeof attachmentSchema>;
 export type Guest = z.infer<typeof guestSchema>;
+export type Family = z.infer<typeof familySchema>;
+export type HouseholdItem = z.infer<typeof householdSchema>;
 export type Task = z.infer<typeof taskSchema>;
 export type Vendor = z.infer<typeof vendorSchema>;
 export type TimelineEvent = z.infer<typeof eventSchema>;
@@ -372,10 +480,13 @@ export type TrashItem = z.infer<typeof trashSchema>;
 export type Collection =
   | "expenses"
   | "guests"
+  | "families"
+  | "household"
   | "tasks"
   | "vendors"
   | "timeline";
-export type RecordItem = Expense | Guest | Task | Vendor | TimelineEvent;
+export type RecordItem =
+  Expense | Guest | Family | HouseholdItem | Task | Vendor | TimelineEvent;
 export const newId = () => crypto.randomUUID();
 export const nowIso = () => new Date().toISOString();
 export function errorMessage(error: unknown): string {

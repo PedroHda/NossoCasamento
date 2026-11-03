@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { BudgetNavigation } from "./household.tsx";
+import { CalendarConnection } from "../components/calendar-connection.tsx";
+import { googleCalendarUrl } from "../services/calendar.ts";
 import { usePlanning } from "../app/context.tsx";
 import {
   CATEGORIES,
@@ -58,6 +61,7 @@ export function Budget({ actions }: { actions: ViewActions }) {
           <Icon name="plus" /> Nova despesa
         </button>
       </PageHeading>
+      <BudgetNavigation />
       <section className="budget-overview">
         <div className="budget-main">
           <span className="stat-icon green">
@@ -182,164 +186,6 @@ export function Budget({ actions }: { actions: ViewActions }) {
         <div className="table-footer">
           {rows.length} despesas
           <span>Valores em reais · comprovantes no detalhe da despesa</span>
-        </div>
-      </section>
-    </>
-  );
-}
-export function Guests({ actions }: { actions: ViewActions }) {
-  const { plan } = usePlanning();
-  const t = totals(plan);
-  const [filter, setFilter] = useState("Todos");
-  const [query, setQuery] = useState("");
-  const rows = plan.guests.filter(
-    (item) =>
-      matchesQuery(`${item.name} ${item.group} ${item.dietary}`, query) &&
-      (filter === "Todos" || item.status === filter),
-  );
-  return (
-    <>
-      <PageHeading
-        title="Gente que faz parte da história."
-        subtitle="Cada convite, cada confirmação e cada cuidado com quem estará perto."
-      >
-        <button
-          className="button primary"
-          onClick={() => actions.edit("guests")}
-        >
-          <Icon name="plus" /> Novo convidado
-        </button>
-      </PageHeading>
-      <div className="summary-strip">
-        <div>
-          <Icon name="users" />
-          <span>
-            <strong>{t.invited}</strong> pessoas convidadas
-          </span>
-        </div>
-        <div>
-          <i className="status-dot green-dot" />
-          <span>
-            <strong>{t.confirmed}</strong> confirmadas
-          </span>
-        </div>
-        <div>
-          <i className="status-dot orange-dot" />
-          <span>
-            <strong>{t.pending}</strong> aguardando resposta
-          </span>
-        </div>
-        <div>
-          Meta: <strong>{plan.settings.guestTarget}</strong>
-        </div>
-      </div>
-      <section className="card">
-        <CardHeading
-          title="Nossa lista de convidados"
-          subtitle="As confirmações podem ser registradas aqui ou importadas pelo código do convite."
-        >
-          <div className="compact-actions">
-            <button className="button secondary" onClick={actions.response}>
-              <Icon name="upload" /> Importar confirmação
-            </button>
-            <ActionButton action={() => exportCsv(plan, "guests")}>
-              <Icon name="download" /> Planilha CSV
-            </ActionButton>
-          </div>
-        </CardHeading>
-        <Filters
-          options={["Todos", "Confirmado", "Pendente", "Não vai"]}
-          selected={filter}
-          onFilter={setFilter}
-          query={query}
-          onQuery={setQuery}
-          placeholder="Buscar nome, grupo ou restrição..."
-        />
-        <div className="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Convidado</th>
-                <th>Grupo</th>
-                <th>Acompanhantes</th>
-                <th>Confirmação</th>
-                <th>Restrições alimentares</th>
-                <th>Convite</th>
-                <th>
-                  <span className="sr-only">Ações</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((guest, index) => (
-                <tr key={guest.id}>
-                  <td>
-                    <span className="person-cell">
-                      <span className={`person-avatar color-${index % 3}`}>
-                        {guest.name
-                          .split(" ")
-                          .map((item) => item[0])
-                          .slice(0, 2)
-                          .join("")}
-                      </span>
-                      <span>
-                        <strong>{guest.name}</strong>
-                        {guest.phone && (
-                          <small className="cell-caption">{guest.phone}</small>
-                        )}
-                      </span>
-                    </span>
-                  </td>
-                  <td>{guest.group}</td>
-                  <td>
-                    {guest.status === "Confirmado"
-                      ? `${guest.confirmedCompanions ?? guest.companions} confirmados`
-                      : `Até ${guest.companions}`}
-                  </td>
-                  <td>
-                    <Badge
-                      color={
-                        guest.status === "Confirmado"
-                          ? "green"
-                          : guest.status === "Pendente"
-                            ? "orange"
-                            : "neutral"
-                      }
-                    >
-                      {guest.status}
-                    </Badge>
-                  </td>
-                  <td className="wrapping-cell">{guest.dietary || "—"}</td>
-                  <td>
-                    <button
-                      className="table-link"
-                      onClick={() => actions.invite(guest.id)}
-                    >
-                      Preparar convite <Icon name="arrow" />
-                    </button>
-                  </td>
-                  <td>
-                    <RowActions
-                      name={guest.name}
-                      onEdit={() => actions.edit("guests", guest)}
-                      onDelete={() => actions.remove("guests", guest)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {!rows.length && (
-          <EmptyState
-            symbol="users"
-            title="Nenhum convidado encontrado"
-            description="Tente outro filtro ou adicione um novo convite."
-          />
-        )}
-        <div className="table-footer">
-          {rows.length} convites
-          <span>Cada pessoa confirma dentro do limite do seu convite.</span>
         </div>
       </section>
     </>
@@ -665,6 +511,7 @@ export function Timeline({ actions }: { actions: ViewActions }) {
           <Icon name="plus" /> Novo momento
         </button>
       </PageHeading>
+      <CalendarConnection />
       <section className="card">
         <CardHeading
           title="Cronograma do casamento"
@@ -690,6 +537,14 @@ export function Timeline({ actions }: { actions: ViewActions }) {
                   </p>
                 )}
                 {item.notes && <p>{item.notes}</p>}
+                <a
+                  className="text-link"
+                  href={googleCalendarUrl({ ...item, kind: "Cronograma" })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Icon name="external" /> Preparar no Google Agenda
+                </a>
               </div>
               <RowActions
                 name={item.name}

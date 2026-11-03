@@ -35,6 +35,7 @@ export interface ViewActions {
   finance: (id: string) => void;
   invite: (id: string) => void;
   response: () => void;
+  familyInvite: (id: string) => void;
 }
 function CountdownBanner() {
   const { plan } = usePlanning();

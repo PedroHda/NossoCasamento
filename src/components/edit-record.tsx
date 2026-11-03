@@ -21,11 +21,13 @@ export function RecordEditor({
   collection,
   record,
   vendorId,
+  familyId,
   onClose,
 }: {
-  collection: Collection;
+  collection: Exclude<Collection, "families" | "household">;
   record?: RecordItem;
   vendorId?: string;
+  familyId?: string;
   onClose: () => void;
 }) {
   const { plan, update } = usePlanning();
@@ -78,6 +80,9 @@ export function RecordEditor({
         notes: stringField(data, "notes"),
         inviteToken: guest?.inviteToken || newId(),
         lastResponseAt: guest?.lastResponseAt || "",
+        familyId: stringField(data, "familyId") || null,
+        child: data.get("child") === "on",
+        table: stringField(data, "table"),
       };
     else if (collection === "tasks")
       item = {
@@ -107,6 +112,11 @@ export function RecordEditor({
         time: stringField(data, "time"),
         location: stringField(data, "location"),
         notes: stringField(data, "notes"),
+        durationMinutes: numberField(data, "durationMinutes"),
+        reminderMinutes:
+          stringField(data, "reminderMinutes") === ""
+            ? null
+            : numberField(data, "reminderMinutes"),
       };
     await update((current) =>
       updateRecord(current, collection, item, record?.updatedAt),
@@ -220,6 +230,43 @@ export function RecordEditor({
         )}
         {collection === "guests" && (
           <>
+            <div className="form-grid">
+              <label>
+                Família / núcleo
+                <select
+                  name="familyId"
+                  defaultValue={guest?.familyId || familyId || ""}
+                >
+                  <option value="">Convite individual / sem família</option>
+                  {guest?.familyId &&
+                    !plan.families.some((f) => f.id === guest.familyId) && (
+                      <option value={guest.familyId}>Família na lixeira</option>
+                    )}
+                  {plan.families.map((f) => (
+                    <option value={f.id} key={f.id}>
+                      {f.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Mesa (opcional)
+                <input
+                  name="table"
+                  maxLength={80}
+                  defaultValue={guest?.table || ""}
+                  placeholder="Vazio = mesa da família"
+                />
+              </label>
+            </div>
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                name="child"
+                defaultChecked={guest?.child || false}
+              />{" "}
+              Convidado infantil
+            </label>
             <div className="form-grid">
               <label>
                 Grupo
@@ -367,6 +414,33 @@ export function RecordEditor({
         )}
         {collection === "timeline" && (
           <>
+            <div className="form-grid">
+              <label>
+                Duração (minutos)
+                <input
+                  name="durationMinutes"
+                  type="number"
+                  min="5"
+                  max="1440"
+                  defaultValue={event?.durationMinutes ?? 60}
+                  required
+                />
+              </label>
+              <label>
+                Avisar antes
+                <select
+                  name="reminderMinutes"
+                  defaultValue={event?.reminderMinutes ?? ""}
+                >
+                  <option value="">Usar antecedência geral</option>
+                  <option value="0">No horário</option>
+                  <option value="60">1 hora antes</option>
+                  <option value="1440">1 dia antes</option>
+                  <option value="4320">3 dias antes</option>
+                  <option value="10080">7 dias antes</option>
+                </select>
+              </label>
+            </div>
             <div className="form-grid">
               <label>
                 Data

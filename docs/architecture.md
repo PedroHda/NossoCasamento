@@ -13,11 +13,14 @@ Telas React → PlanningProvider → PlanningRepository → LocalPlanningReposit
 - `src/domain/schema.ts`: modelo v2, limites, datas, valores e integridade de referências.
 - `src/domain/migration.ts`: conversão de backups v1 e criação dos exemplos.
 - `src/domain/planning.ts`: cálculos em centavos, parcelas, lixeira, lembretes e gráfico.
+- `src/domain/guests.ts`: contagem de pessoas/acompanhantes, agrupamento familiar e status parcial.
+- `src/domain/household.ts`: inventário, quantidades, cômodos e estimativa independente do casamento.
 - `src/data/contracts.ts`: contratos assíncronos de persistência, identidade e colaboração.
 - `src/data/local-repository.ts`: migração, leitura, validação, revisão, locks e eventos de outras abas.
 - `src/data/services.ts`: ponto de composição dos adaptadores.
 - `src/app/context.tsx`: estado das telas, gravação, recuperação, avisos e desfazer.
 - `src/services/`: exportações locais, arquivos, convites portáveis e notificações Android.
+- `src/services/calendar.ts` e `PlanningCalendarPlugin.java`: calendário Android, com autorização nativa por aparelho, atualização idempotente e remoção apenas de cópias do app.
 
 Os componentes não acessam `localStorage` diretamente. O provider aceita `ApplicationServices` por propriedade; o padrão vem de `createServices()`. Os contratos de identidade e colaboração são apenas interfaces, sem comportamento ativo.
 
@@ -37,7 +40,11 @@ Não há replicação ou sincronização offline com servidor. Abrir em outra or
 
 ## Modelo de domínio
 
-`Plan` contém ID, versão, revisão, timestamp, preferências, despesas, convidados, tarefas, fornecedores, cronograma e lixeira. Registros têm ID e timestamp; pagamentos, parcelas e comprovantes têm IDs próprios. Despesas referenciam fornecedores; pagamentos referenciam parcelas e comprovantes da própria despesa.
+`Plan` contém ID, versão, revisão, timestamp, preferências, despesas, convidados, famílias, inventário da casa, tarefas, fornecedores, cronograma e lixeira. Registros têm ID e timestamp; pagamentos, parcelas e comprovantes têm IDs próprios. Despesas referenciam fornecedores; pagamentos referenciam parcelas e comprovantes da própria despesa. Convidados referenciam famílias ativas ou na lixeira; excluir definitivamente a família desvincula os convidados sem excluí-los.
+
+A versão 2.1 preserva o schema v2. Campos novos têm valores padrão na leitura dos backups anteriores; os IDs e confirmações são mantidos e nenhum vínculo familiar é inferido. A lista da casa não cria despesas ou pagamentos. Os códigos familiares usam envelope v2, mantendo a leitura dos códigos individuais v1. A importação familiar é atômica e valida tokens, limites, repetição e ordem das respostas antes de gravar.
+
+A conexão ao calendário é separada da persistência. O backup contém a preferência, mas a autorização para copiar dados é guardada apenas nas preferências nativas do aparelho. Cada cópia recebe ID/marca do planejamento e um vínculo local, evitando alterar eventos pessoais. O provider solicita atualização ao salvar e ao retomar o app. Não há serviço permanente ou sincronização entre instalações do Nosso Casamento.
 
 O snapshot inteiro é validado antes de salvar. São rejeitados IDs repetidos, referências inexistentes, valores com mais de duas casas decimais, pagamentos acima do saldo e arquivos incompatíveis com o formato declarado. Registros da lixeira continuam contando para integridade e limite de arquivos. O limite de lixeira é 100 registros; exclusões adicionais falham sem remover dados.
 

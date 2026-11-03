@@ -15,7 +15,7 @@ export type Invitation = z.infer<typeof invitationSchema>;
 const responseSchema = z.object({
   version: z.literal(1),
   token: z.string().min(1).max(100),
-  status: z.enum(["Confirmado", "Não vai"]),
+  status: z.enum(["Confirmado", "Não vai", "Talvez"]),
   companions: z.number().int().min(0).max(20),
   dietary: z.string().trim().max(300),
   updatedAt: z.string().datetime(),
@@ -29,8 +29,8 @@ export function encodeCode(value: unknown): string {
     .replaceAll("/", "_")
     .replaceAll("=", "");
 }
-function decodeCode(code: string): unknown {
-  if (code.length > 6000 || !/^[A-Za-z0-9_-]+$/.test(code))
+export function decodeCode(code: string): unknown {
+  if (code.length > 24000 || !/^[A-Za-z0-9_-]+$/.test(code))
     throw new Error("Código de convite ou resposta inválido.");
   try {
     return JSON.parse(
@@ -73,6 +73,8 @@ export function applyResponse(plan: Plan, response: GuestResponse): Plan {
     throw new Error(
       "Esta resposta não pertence a um convite da sua lista atual.",
     );
+  if (guest.lastResponseAt && checked.updatedAt < guest.lastResponseAt)
+    throw new Error("Já existe uma confirmação mais recente para esta pessoa.");
   if (checked.companions > guest.companions)
     throw new Error(
       "A resposta inclui mais acompanhantes do que o convite permite.",

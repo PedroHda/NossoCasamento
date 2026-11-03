@@ -6,9 +6,11 @@
 
 ## Android e acesso local
 
-**[Baixar APK v2.0.0 de demonstração](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-2.0.0.apk)** · [SHA-256](apk/NossoCasamento-2.0.0.apk.sha256) · [Guia de instalação e compilação](docs/android.md)
+**[Baixar NossoCasamento-2.1.0.apk](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-2.1.0.apk)** · [SHA-256](apk/NossoCasamento-2.1.0.apk.sha256) · [Guia de instalação e compilação](docs/android.md)
 
 O APK inclui a interface e as fontes, funciona sem internet e usa assinatura de debug para instalação direta. Requer Android 7.0+ e WebView/Chrome 110+. Não foi testado em aparelho físico nesta atualização.
+
+**Atualização da v2.0.0:** a chave disponível neste computador é diferente da usada no APK 2.0.0 do repositório. Exporte o backup no app antigo antes de desinstalar; instale a 2.1.0 e importe o JSON. A instalação por cima depende da chave anterior. Nunca apague os dados antes de preservar o backup.
 
 ```bash
 git clone https://github.com/PedroHda/NossoCasamento.git
@@ -19,23 +21,35 @@ npm run dev
 
 Abra o endereço mostrado pelo terminal, normalmente **http://127.0.0.1:5173/**. É necessário **Node.js 22.12+**. Não é preciso banco de dados, chave de API, conta ou arquivo `.env`.
 
+## Novidades da versão 2.1.0
+
+- **Convidados:** famílias vinculadas a pessoas, contato do núcleo, mesa, crianças, acompanhantes, confirmação individual e em grupo, status Talvez, filtros de resposta parcial e visão por mesas. Os cadastros anteriores continuam disponíveis como convites individuais.
+- **Nossa casa:** aba dentro de Valores com itens por cômodo/categoria, quantidades desejadas e recebidas, prioridade, preço unitário estimado, loja, produto e entrega. A estimativa do que falta fica separada das despesas do casamento. Exportação CSV na própria tela.
+- **Agenda Android:** conexão opcional com um calendário editável do celular. Após autorizar, o app cria e atualiza cópias dos próximos compromissos, tarefas, pagamentos e entregas. No navegador, há exportação ICS e links para preparar eventos no Google Agenda.
+- **Navegação:** atalhos inferiores no celular e contagem regressiva no cabeçalho das áreas do planejamento.
+
+![Gerenciamento de convidados com dados de validação](docs/preview-guests-2.1.png)
+
+Veja [sugestões para as próximas versões](docs/proximas-funcionalidades.md); elas ainda não foram implementadas.
+
 ## O que está implementado
 
-| Área          | Recursos                                                                                                            |
-| ------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Visão geral   | Contagem em tempo real, resumo financeiro, confirmações, progresso, gráficos e próximos prazos.                     |
-| Orçamento     | Estimado versus contratado, vínculo com fornecedor, histórico de pagamentos, saldo e vencimento.                    |
-| Parcelas      | Divisão do saldo em até 36 parcelas mensais, centavos distribuídos corretamente e pagamento vinculado à parcela.    |
-| Comprovantes  | PDF, PNG e JPG guardados localmente, com download e inclusão no backup.                                             |
-| Convidados    | Grupos, contato, limite de acompanhantes, quantidade efetivamente confirmada, restrições alimentares e observações. |
-| Convites      | Convite individual com formulário de resposta e código para importação manual pelo casal.                           |
-| Checklist     | Prazo, responsável, prioridade, conclusão e filtros.                                                                |
-| Fornecedores  | Contato, proposta de preço, etapa da negociação, comparação por categoria/valor e criação de despesa vinculada.     |
-| Cronograma    | Momentos com data, horário, local e observações.                                                                    |
-| Lembretes     | Agenda de tarefas, pagamentos e cronograma; exportação de calendário e notificações locais opcionais no Android.    |
-| Relatórios    | PDF do planejamento, CSV de orçamento/convidados e agenda ICS.                                                      |
-| Configurações | Casal, data, horário, orçamento, meta, local e endereço público dos convites.                                       |
-| Recuperação   | Backup JSON, migração da versão 1, lixeira e botão de desfazer a alteração mais recente.                            |
+| Área          | Recursos                                                                                                         |
+| ------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Visão geral   | Contagem em tempo real, resumo financeiro, confirmações, progresso, gráficos e próximos prazos.                  |
+| Orçamento     | Estimado versus contratado, vínculo com fornecedor, histórico de pagamentos, saldo e vencimento.                 |
+| Parcelas      | Divisão do saldo em até 36 parcelas mensais, centavos distribuídos corretamente e pagamento vinculado à parcela. |
+| Comprovantes  | PDF, PNG e JPG guardados localmente, com download e inclusão no backup.                                          |
+| Convidados    | Famílias, pessoas, mesas, crianças, status Talvez, acompanhantes e restrições alimentares.                       |
+| Convites      | Link individual ou familiar, resposta por pessoa e código para importação manual pelo casal.                     |
+| Nossa casa    | Inventário por cômodo, já temos/falta, estimativas, prioridades, compras, entregas e CSV.                        |
+| Checklist     | Prazo, responsável, prioridade, conclusão e filtros.                                                             |
+| Fornecedores  | Contato, proposta de preço, etapa da negociação, comparação por categoria/valor e criação de despesa vinculada.  |
+| Cronograma    | Momentos com data, horário, duração, local, antecedência própria e link do Google Agenda.                        |
+| Lembretes     | Tarefas, pagamentos, cronograma e entregas; ICS, notificações e conexão opcional à agenda Android.               |
+| Relatórios    | PDF do planejamento, CSV de orçamento/convidados e agenda ICS.                                                   |
+| Configurações | Casal, data, horário, orçamento, meta, local e endereço público dos convites.                                    |
+| Recuperação   | Backup JSON, migração da versão 1, lixeira e botão de desfazer a alteração mais recente.                         |
 
 A interface inclui busca global pelo botão ou atalho `/`, filtros, formulários validados, navegação por teclado e foco visível. As janelas usam `<dialog>` e o layout respeita a preferência de movimento reduzido.
 
@@ -69,13 +83,21 @@ A data inicial é **24/07/2027 às 00:00**, mas pode ser alterada nas configura�
 
 O fluxo de confirmação desta versão é **manual**, pois não há banco ou backend:
 
-1. Cadastre o convidado e a quantidade permitida de acompanhantes.
+1. Cadastre uma família e vincule seus membros, ou mantenha o convite individual. Cada pessoa deve ter um cadastro; acompanhantes são lugares extras ainda sem nome, evitando contagem duplicada.
 2. Para enviar um link a outro aparelho, publique o site em uma hospedagem estática e configure seu endereço HTTPS em **Configurações**. `localhost` só abre no próprio aparelho; nessa situação o botão de copiar para enviar fica desativado, mas o teste do convite funciona.
-3. Abra o convite individual e copie o link para enviá-lo pelo canal de sua preferência.
-4. O convidado preenche presença, acompanhantes e restrições, e envia ao casal o código gerado.
-5. Em **Convidados → Importar confirmação**, cole o código, confira e aplique.
+3. Abra **Link da família** ou o convite individual e copie o link para enviá-lo pelo canal de sua preferência. O atalho WhatsApp apenas prepara a mensagem.
+4. O convidado preenche presença, acompanhantes e restrições de cada pessoa, e envia ao casal o código gerado. Uma família pode ter respostas diferentes entre membros.
+5. Em **Convidados → Receber confirmação**, cole o código, confira e aplique. Respostas com membros desconhecidos, acompanhantes acima do limite ou anteriores à última resposta importada são rejeitadas.
 
-O formulário não envia a resposta automaticamente. O link contém somente os dados daquele convite, sem orçamento ou restante da lista. O código identifica o convite, mas **não autentica a identidade da pessoa**. Compartilhe o link individual com cuidado. Não há envio automático de mensagens nem publicação de site habilitada pelo push.
+O formulário não envia a resposta automaticamente. O link contém somente os dados daquele convite individual ou núcleo familiar, sem contatos, orçamento ou restante da lista. O código identifica o convite, mas **não autentica a identidade da pessoa**. Compartilhe os links com cuidado. Convites familiares aceitam até 80 pessoas e têm limite de tamanho. Não há envio automático de mensagens nem publicação de site habilitada pelo push.
+
+## Agenda e avisos
+
+No APK, abra **Agenda** ou **Lembretes → Conectar agenda**, conceda a permissão de calendário, escolha a agenda e toque em **Autorizar conexão automática**. São mantidas até 250 cópias dos próximos eventos e do dia anterior, sem convidar participantes. O calendário escolhido pode sincronizar com a conta Google ou outra conta já configurada no aparelho; se for compartilhado, quem tem acesso verá os eventos.
+
+A conexão é atualizada ao abrir/retomar o app e após alterações. Eventos do cronograma podem ter duração e antecedência próprias. Tarefas, pagamentos e entregas usam 09:00 de Brasília e a antecedência geral. Itens concluídos/pagos/recebidos deixam de gerar cópias futuras; eventos pessoais são preservados. Desconectar remove as cópias reconhecidas como pertencentes ao app. A autorização é por aparelho; importar um backup pode exigir reautorizar a agenda.
+
+No navegador, **Baixar agenda** produz um ICS com alarmes; a importação é manual e repetida importação pode depender de como seu calendário trata os IDs. O link Google Agenda prepara um evento para você revisar e salvar. O app não mantém conexão automática do navegador com o Google.
 
 ## Dados locais e backups
 
@@ -88,6 +110,7 @@ O armazenamento pertence ao navegador/perfil/origem (protocolo, endereço e port
 - O primeiro acesso à versão 2 migra a chave `nosso-casamento:v1` quando ainda não existe uma versão 2.
 - A chave antiga é mantida intacta para recuperação; alterações novas são gravadas somente na versão 2.
 - IDs, nomes, valores pagos e confirmações antigos são preservados. Datas desconhecidas de pagamentos não são inventadas.
+- A versão 2.1 mantém o schema v2 e completa os campos novos com valores padrão: famílias e lista da casa vazias, sem inferir parentesco nem conectar calendários automaticamente.
 - Abas da mesma origem recebem atualizações. Revisões e Web Locks, quando disponíveis, impedem a gravação silenciosa sobre alterações mais recentes. Sem Web Locks, a proteção é limitada à verificação de revisão.
 - Dados inválidos não são trocados automaticamente por exemplos: uma tela de recuperação oferece exportação bruta e importação.
 

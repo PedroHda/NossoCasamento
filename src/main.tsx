@@ -2,9 +2,11 @@ import { createRoot } from "react-dom/client";
 import { useEffect, useState, Component, type ReactNode } from "react";
 import "./style.css";
 import "./improvements.css";
+import "./organizer.css";
 import { App } from "./app/App.tsx";
 import { PlanningProvider } from "./app/context.tsx";
 import { PublicRsvp } from "./components/invitations.tsx";
+import { PublicFamilyRsvp } from "./components/family-invitations.tsx";
 
 class ErrorBoundary extends Component<
   { children: ReactNode },
@@ -38,7 +40,9 @@ function Root() {
     window.addEventListener("hashchange", listener);
     return () => window.removeEventListener("hashchange", listener);
   }, []);
-  return hash.startsWith("#rsvp/") ? (
+  return hash.startsWith("#family/") ? (
+    <PublicFamilyRsvp code={hash.slice(8)} />
+  ) : hash.startsWith("#rsvp/") ? (
     <PublicRsvp code={hash.slice(6)} />
   ) : (
     <PlanningProvider>

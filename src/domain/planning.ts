@@ -10,6 +10,7 @@ import {
   type Collection,
   type RecordItem,
 } from "./schema.ts";
+import { guestCounts } from "./guests.ts";
 
 export const cents = (value: number) => Math.round(value * 100);
 export const sumMoney = (values: number[]) =>
@@ -104,10 +105,7 @@ export function totals(plan: Plan) {
     paid,
     remaining: (cents(contracted) - cents(paid)) / 100,
     available: (cents(plan.settings.budget) - cents(contracted)) / 100,
-    invited: count(),
-    confirmed: count("Confirmado"),
-    pending: count("Pendente"),
-    declined: count("Não vai"),
+    ...guestCounts(plan.guests),
     completed,
     progress: plan.tasks.length
       ? Math.round((completed / plan.tasks.length) * 100)
@@ -218,6 +216,15 @@ export function emptyTrash(plan: Plan): Plan {
     if (expense.vendorId && removedVendors.has(expense.vendorId))
       expense.vendorId = null;
   });
+  const removedFamilies = new Set(
+    next.trash
+      .filter((item) => item.collection === "families")
+      .map((item) => item.record.id),
+  );
+  next.guests.forEach((guest) => {
+    if (guest.familyId && removedFamilies.has(guest.familyId))
+      guest.familyId = null;
+  });
   next.trash = [];
   return planSchema.parse(next);
 }
@@ -234,10 +241,13 @@ export function vendorName(plan: Plan, id: string | null) {
 export interface ReminderItem {
   id: string;
   name: string;
-  kind: "Tarefa" | "Pagamento" | "Cronograma";
+  kind: "Tarefa" | "Pagamento" | "Cronograma" | "Casa";
   date: string;
   time: string;
   amount?: number;
+  location?: string;
+  durationMinutes?: number;
+  reminderMinutes?: number | null;
 }
 export function reminderItems(plan: Plan): ReminderItem[] {
   const tasks: ReminderItem[] = plan.tasks
@@ -289,7 +299,26 @@ export function reminderItems(plan: Plan): ReminderItem[] {
       kind: "Cronograma" as const,
       date: item.date,
       time: item.time,
+      location: item.location,
+      durationMinutes: item.durationMinutes,
+      reminderMinutes: item.reminderMinutes,
     })),
+    ...plan.household
+      .filter(
+        (item) =>
+          item.deliveryDate &&
+          item.ownedQuantity < item.quantity &&
+          ["Comprado", "Aguardando entrega"].includes(item.status),
+      )
+      .map((item) => ({
+        id: `household-${item.id}`,
+        name: `Entrega: ${item.name}`,
+        kind: "Casa" as const,
+        date: item.deliveryDate,
+        time: "09:00",
+        location: item.room,
+        reminderMinutes: null,
+      })),
   ].sort((a, b) => `${a.date}T${a.time}`.localeCompare(`${b.date}T${b.time}`));
 }
 

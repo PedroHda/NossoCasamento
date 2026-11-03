@@ -13,20 +13,26 @@ import {
 } from "../components/ui.tsx";
 import { RecordEditor } from "../components/edit-record.tsx";
 import { ExpenseDetails } from "../components/expense-details.tsx";
-import { GuestInvitation, ImportResponse } from "../components/invitations.tsx";
-import { Overview, type ViewActions } from "../views/overview.tsx";
+import { GuestInvitation } from "../components/invitations.tsx";
 import {
-  Budget,
-  Guests,
-  Tasks,
-  Vendors,
-  Timeline,
-} from "../views/collections.tsx";
+  FamilyInvitation,
+  ConfirmationImport,
+} from "../components/family-invitations.tsx";
+import {
+  FamilyEditor,
+  HouseholdEditor,
+} from "../components/family-household-editor.tsx";
+import { Household } from "../views/household.tsx";
+import { CompactCountdown } from "../components/compact-countdown.tsx";
+import { Guests } from "../views/guests.tsx";
+import { Overview, type ViewActions } from "../views/overview.tsx";
+import { Budget, Tasks, Vendors, Timeline } from "../views/collections.tsx";
 import { Reminders, Settings } from "../views/settings.tsx";
 
 const views = {
   overview: "Visão geral",
   budget: "Orçamento",
+  household: "Nossa casa",
   guests: "Convidados",
   tasks: "Checklist",
   vendors: "Fornecedores",
@@ -45,6 +51,7 @@ type Editor =
   | { kind: "delete"; collection: Collection; record: RecordItem }
   | { kind: "finance"; id: string }
   | { kind: "invite"; id: string }
+  | { kind: "familyInvite"; id: string }
   | { kind: "search" | "response" }
   | null;
 const routeFromHash = () =>
@@ -121,10 +128,12 @@ export function App() {
     finance: (id) => setEditor({ kind: "finance", id }),
     invite: (id) => setEditor({ kind: "invite", id }),
     response: () => setEditor({ kind: "response" }),
+    familyInvite: (id) => setEditor({ kind: "familyInvite", id }),
   };
   const links: [Route, string][] = [
     ["overview", "grid"],
     ["budget", "wallet"],
+    ["household", "home"],
     ["guests", "users"],
     ["tasks", "checklist"],
     ["vendors", "store"],
@@ -227,6 +236,7 @@ export function App() {
             <strong>{views[route]}</strong>
           </div>
           <div className="topbar-actions">
+            <CompactCountdown />
             <span className="local-mode">
               <i />
               {busy ? "Salvando…" : "Modo local"}
@@ -263,6 +273,8 @@ export function App() {
             <Overview actions={actions} />
           ) : route === "budget" ? (
             <Budget actions={actions} />
+          ) : route === "household" ? (
+            <Household actions={actions} />
           ) : route === "guests" ? (
             <Guests actions={actions} />
           ) : route === "tasks" ? (
@@ -293,14 +305,57 @@ export function App() {
           </footer>
         </main>
       </div>
-      {editor?.kind === "edit" && (
-        <RecordEditor
-          collection={editor.collection}
-          record={editor.record}
-          vendorId={editor.vendorId}
+      <nav className="mobile-bottom-nav" aria-label="Navegação inferior">
+        {(
+          [
+            ["overview", "grid", "Início"],
+            ["budget", "wallet", "Valores"],
+            ["guests", "users", "Convidados"],
+            ["household", "home", "Casa"],
+            ["timeline", "calendar", "Agenda"],
+          ] as const
+        ).map(([key, icon, label]) => (
+          <a
+            key={key}
+            href={`#${key}`}
+            className={route === key ? "active" : ""}
+            aria-current={route === key ? "page" : undefined}
+          >
+            <Icon name={icon} />
+            <span>{label}</span>
+          </a>
+        ))}
+      </nav>
+      {editor?.kind === "edit" && editor.collection === "families" && (
+        <FamilyEditor
+          family={
+            editor.record as import("../domain/schema.ts").Family | undefined
+          }
           onClose={() => setEditor(null)}
         />
       )}
+      {editor?.kind === "edit" && editor.collection === "household" && (
+        <HouseholdEditor
+          item={
+            editor.record as
+              import("../domain/schema.ts").HouseholdItem | undefined
+          }
+          onClose={() => setEditor(null)}
+        />
+      )}
+      {editor?.kind === "edit" &&
+        editor.collection !== "families" &&
+        editor.collection !== "household" && (
+          <RecordEditor
+            collection={editor.collection}
+            record={editor.record}
+            vendorId={editor.vendorId}
+            familyId={
+              editor.collection === "guests" ? editor.vendorId : undefined
+            }
+            onClose={() => setEditor(null)}
+          />
+        )}
       {editor?.kind === "delete" && (
         <DeleteRecord
           collection={editor.collection}
@@ -319,8 +374,15 @@ export function App() {
           />
         )}
       {editor?.kind === "response" && (
-        <ImportResponse onClose={() => setEditor(null)} />
+        <ConfirmationImport onClose={() => setEditor(null)} />
       )}
+      {editor?.kind === "familyInvite" &&
+        plan.families.some((f) => f.id === editor.id) && (
+          <FamilyInvitation
+            family={plan.families.find((f) => f.id === editor.id)!}
+            onClose={() => setEditor(null)}
+          />
+        )}
       {editor?.kind === "search" && (
         <Search actions={actions} onClose={() => setEditor(null)} />
       )}
@@ -339,6 +401,8 @@ function Search({
   const collections: [Collection, string][] = [
     ["expenses", "Despesa"],
     ["guests", "Convidado"],
+    ["families", "Família"],
+    ["household", "Item da casa"],
     ["tasks", "Tarefa"],
     ["vendors", "Fornecedor"],
     ["timeline", "Cronograma"],

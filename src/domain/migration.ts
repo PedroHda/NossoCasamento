@@ -135,6 +135,8 @@ export function createPlan(empty = false): Plan {
         location: "",
         notes: "Horário de exemplo: ajuste para o seu grande dia.",
         updatedAt: plan.updatedAt,
+        durationMinutes: 60,
+        reminderMinutes: null,
       },
       {
         id: newId(),
@@ -144,6 +146,8 @@ export function createPlan(empty = false): Plan {
         location: "",
         notes: "",
         updatedAt: plan.updatedAt,
+        durationMinutes: 60,
+        reminderMinutes: null,
       },
       {
         id: newId(),
@@ -153,6 +157,8 @@ export function createPlan(empty = false): Plan {
         location: "",
         notes: "",
         updatedAt: plan.updatedAt,
+        durationMinutes: 60,
+        reminderMinutes: null,
       },
     ];
   }

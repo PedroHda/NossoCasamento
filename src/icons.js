@@ -1,4 +1,6 @@
 export const paths = {
+  home: '<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
+  table: '<rect x="4" y="6" width="16" height="11" rx="2"/><path d="M7 3v3m10-3v3M7 17v4m10-4v4M1 9h3m16 0h3M1 14h3m16 0h3"/>',
   grid: '<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
   wallet:
     '<path d="M20 8V5a2 2 0 0 0-2-2H6a3 3 0 0 0 0 6h14v11H6a3 3 0 0 1-3-3V6"/><path d="M21 12h-5v5h5z"/><path d="M17 14.5h.01"/>',

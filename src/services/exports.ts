@@ -30,6 +30,9 @@ export function createCsv(plan: Plan, kind: "guests" | "budget") {
             "Contato",
             "Restrições alimentares",
             "Observações",
+            "Família",
+            "Mesa",
+            "Criança",
           ],
           ...plan.guests.map((guest) => [
             guest.name,
@@ -42,6 +45,12 @@ export function createCsv(plan: Plan, kind: "guests" | "budget") {
             guest.phone,
             guest.dietary,
             guest.notes,
+            plan.families.find((f) => f.id === guest.familyId)?.name ||
+              "Convite individual",
+            guest.table ||
+              plan.families.find((f) => f.id === guest.familyId)?.table ||
+              "",
+            guest.child ? "Sim" : "Não",
           ]),
         ]
       : [
@@ -117,8 +126,14 @@ export function createCalendar(plan: Plan) {
       `UID:${item.id}@nosso-casamento.local`,
       `DTSTAMP:${stamp}`,
       `DTSTART:${icsDate(item.date, item.time)}`,
+      `DTEND:${new Date(new Date(`${item.date}T${item.time}:00-03:00`).getTime() + (("durationMinutes" in item && item.durationMinutes) || 60) * 60000).toISOString().replace(/[-:]/g, "").replace(".000", "")}`,
       `SUMMARY:${icsEscape(item.name)}`,
       `DESCRIPTION:${icsEscape(`${item.kind}${item.amount !== undefined ? ` · ${money(item.amount)}` : ""}`)}`,
+      "BEGIN:VALARM",
+      `TRIGGER:-PT${("reminderMinutes" in item ? item.reminderMinutes : null) ?? plan.settings.reminderDays * 1440}M`,
+      "ACTION:DISPLAY",
+      `DESCRIPTION:${icsEscape(item.name)}`,
+      "END:VALARM",
       "END:VEVENT",
     );
   lines.push("END:VCALENDAR");

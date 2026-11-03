@@ -9,7 +9,7 @@ export function notificationSchedule(plan: Plan, now = Date.now()) {
     .map((item) => {
       const at = new Date(
         new Date(`${item.date}T${item.time}:00-03:00`).getTime() -
-          plan.settings.reminderDays * 86400000,
+          (item.reminderMinutes ?? plan.settings.reminderDays * 1440) * 60000,
       );
       let id =
         (Array.from(item.id).reduce(
@@ -23,9 +23,11 @@ export function notificationSchedule(plan: Plan, now = Date.now()) {
       return {
         id,
         title:
-          item.kind === "Pagamento"
-            ? "Um pagamento do nosso casamento"
-            : "Um próximo passo do nosso sim",
+          item.kind === "Casa"
+            ? "Um detalhe para a nossa casa"
+            : item.kind === "Pagamento"
+              ? "Um pagamento do nosso casamento"
+              : "Um próximo passo do nosso sim",
         body: item.name,
         schedule: { at },
         extra: { recordId: item.id },

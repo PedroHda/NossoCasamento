@@ -13,6 +13,9 @@ import { createServices, type ApplicationServices } from "../data/services.ts";
 import { RevisionConflictError } from "../data/contracts.ts";
 import { scheduleReminders } from "../services/reminders.ts";
 import { saveText } from "../services/files.ts";
+import { syncCalendar } from "../services/calendar.ts";
+import { App as NativeApp } from "@capacitor/app";
+import { isNative } from "../services/files.ts";
 
 interface Notice {
   message: string;
@@ -138,6 +141,39 @@ export function PlanningProvider({
       mounted = false;
     };
   }, [plan]);
+
+  useEffect(() => {
+    if (!plan) return;
+    let mounted = true;
+    void syncCalendar(plan).catch((error) => {
+      if (mounted) notify(errorMessage(error), true);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [plan]);
+
+  useEffect(() => {
+    if (!isNative()) return;
+    let mounted = true;
+    const listener = NativeApp.addListener("appStateChange", (state) => {
+      if (!state.isActive || !current.current) return;
+      void syncCalendar(current.current, true).catch((error) => {
+        if (mounted) notify(errorMessage(error), true);
+      });
+      void scheduleReminders(current.current)
+        .then((count) => {
+          if (mounted) setNotificationCount(count);
+        })
+        .catch((error) => {
+          if (mounted) notify(errorMessage(error), true);
+        });
+    });
+    return () => {
+      mounted = false;
+      void listener.then((handle) => handle.remove());
+    };
+  }, []);
 
   const update: PlanningContext["update"] = async (
     transform,

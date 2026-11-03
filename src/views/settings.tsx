@@ -11,6 +11,7 @@ import {
   today,
 } from "../domain/planning.ts";
 import { enableReminders } from "../services/reminders.ts";
+import { CalendarConnection } from "../components/calendar-connection.tsx";
 import { isNative, saveText } from "../services/files.ts";
 import { exportPdf, exportCsv, exportCalendar } from "../services/exports.ts";
 import {
@@ -35,7 +36,7 @@ export function Reminders() {
     <>
       <PageHeading
         title="Um cuidado para lembrar de tudo."
-        subtitle="Parcelas, tarefas e momentos do nosso dia, reunidos em uma agenda."
+        subtitle="Parcelas, tarefas, entregas da casa e momentos do nosso dia, reunidos em uma agenda."
       >
         <ActionButton action={() => exportCalendar(plan)}>
           <Icon name="calendar" /> Exportar agenda
@@ -80,6 +81,7 @@ export function Reminders() {
           </ActionButton>
         )}
       </section>
+      <CalendarConnection />
       <section className="card">
         <CardHeading
           title="O que vem pela frente"
@@ -87,16 +89,18 @@ export function Reminders() {
         />
         <div className="list-toolbar">
           <div className="filter-tabs">
-            {["Todos", "Tarefa", "Pagamento", "Cronograma"].map((item) => (
-              <button
-                className={`filter-tab ${filter === item ? "selected" : ""}`}
-                aria-pressed={filter === item}
-                key={item}
-                onClick={() => setFilter(item)}
-              >
-                {item}
-              </button>
-            ))}
+            {["Todos", "Tarefa", "Pagamento", "Cronograma", "Casa"].map(
+              (item) => (
+                <button
+                  className={`filter-tab ${filter === item ? "selected" : ""}`}
+                  aria-pressed={filter === item}
+                  key={item}
+                  onClick={() => setFilter(item)}
+                >
+                  {item}
+                </button>
+              ),
+            )}
           </div>
         </div>
         <div className="reminder-list">
@@ -105,11 +109,13 @@ export function Reminders() {
               className="reminder-row"
               key={item.id}
               href={
-                item.kind === "Pagamento"
-                  ? "#budget"
-                  : item.kind === "Tarefa"
-                    ? "#tasks"
-                    : "#timeline"
+                item.kind === "Casa"
+                  ? "#household"
+                  : item.kind === "Pagamento"
+                    ? "#budget"
+                    : item.kind === "Tarefa"
+                      ? "#tasks"
+                      : "#timeline"
               }
             >
               <span
@@ -454,6 +460,8 @@ export function Settings() {
                     {
                       expenses: "Despesa",
                       guests: "Convidado",
+                      families: "Família",
+                      household: "Item da casa",
                       tasks: "Tarefa",
                       vendors: "Fornecedor",
                       timeline: "Cronograma",
@@ -501,9 +509,9 @@ export function Settings() {
           }
           description={
             typeof confirmation === "object"
-              ? `O backup contém ${confirmation.expenses.length} despesas, ${confirmation.guests.length} convites, ${confirmation.tasks.length} tarefas e ${confirmation.timeline.length} momentos. Ele substituirá os dados atuais. Exporte uma cópia antes de continuar.`
+              ? `O backup contém ${confirmation.expenses.length} despesas, ${confirmation.guests.length} pessoas em ${confirmation.families.length} famílias, ${confirmation.household.length} itens da casa, ${confirmation.tasks.length} tarefas e ${confirmation.timeline.length} momentos. Ele substituirá os dados atuais. Exporte uma cópia antes de continuar. A agenda do aparelho pode precisar ser reautorizada.`
               : confirmation === "trash"
-                ? "Os registros da lixeira e seus comprovantes serão removidos definitivamente. Fornecedores apagados serão desvinculados das despesas ativas."
+                ? "Os registros da lixeira e seus comprovantes serão removidos definitivamente. Fornecedores apagados serão desvinculados das despesas e famílias apagadas serão desvinculadas das pessoas. Os convidados ativos serão preservados."
                 : "Os cadastros atuais serão substituídos. Exporte um backup antes de continuar."
           }
           label={

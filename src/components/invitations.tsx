@@ -12,6 +12,7 @@ import {
 } from "../services/invitations.ts";
 import { copyText, isNative, saveText } from "../services/files.ts";
 import { Modal, SubmitForm, Icon, stringField, numberField } from "./ui.tsx";
+import { InvitationBack } from "./invitation-back.tsx";
 
 export function GuestInvitation({
   guest,
@@ -48,7 +49,7 @@ export function GuestInvitation({
       </div>
       <p className="settings-description">
         A pessoa preenche o convite e envia um código de resposta para vocês.
-        Depois, use “Importar confirmação” na lista de convidados. A atualização
+        Depois, use “Receber confirmação” na lista de convidados. A atualização
         é manual nesta versão.
       </p>
       {local && (
@@ -71,7 +72,8 @@ export function GuestInvitation({
         <button
           className="button secondary"
           onClick={() => {
-            window.open(link, "_blank", "noopener,noreferrer");
+            if (isNative()) location.hash = url.hash;
+            else window.open(link, "_blank", "noopener,noreferrer");
           }}
         >
           Testar convite
@@ -200,6 +202,7 @@ export function PublicRsvp({ code }: { code: string }) {
   } catch {
     return (
       <main className="rsvp-page">
+        <InvitationBack />
         <h1>Não conseguimos abrir esse convite.</h1>
         <p>Peça ao casal um link completo e tente novamente.</p>
       </main>
@@ -207,6 +210,7 @@ export function PublicRsvp({ code }: { code: string }) {
   }
   return (
     <main className="rsvp-page">
+      <InvitationBack />
       <div className="rsvp-brand">
         <Icon name="heart" /> NOSSO CASAMENTO
       </div>
@@ -250,6 +254,7 @@ export function PublicRsvp({ code }: { code: string }) {
               Podemos contar com você?
               <select name="status">
                 <option>Confirmado</option>
+                <option>Talvez</option>
                 <option>Não vai</option>
               </select>
             </label>
