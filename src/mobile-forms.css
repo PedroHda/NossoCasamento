@@ -1,0 +1,189 @@
+/* Keep page movement vertical; wide content scrolls within its own region. */
+html {
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+body {
+  width: 100%;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+}
+#app,
+.workspace,
+.workspace > main,
+.workspace > main > *,
+.card,
+.list-toolbar,
+.table-scroll {
+  min-width: 0;
+  max-width: 100%;
+}
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.table-scroll:focus-visible {
+  outline: 0.125rem solid var(--blue);
+  outline-offset: -0.125rem;
+}
+.form-grid,
+.wide-modal .form-grid,
+.settings-grid .settings-card .form-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+.settings-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+}
+.export-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+}
+.guest-summary-card {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+.guest-summary-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
+}
+.guest-organize {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 6rem), 1fr));
+}
+.guest-organize strong,
+.guest-total small {
+  overflow-wrap: anywhere;
+}
+.guest-total,
+.guest-summary-grid,
+.guest-summary-grid > button {
+  min-width: 0;
+}
+.guest-summary-grid > button {
+  flex-wrap: wrap;
+}
+.comparison-filter label {
+  flex-wrap: wrap;
+  white-space: normal;
+}
+.comparison-filter select {
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 10rem;
+}
+.form-grid > *,
+.settings-grid > *,
+.page-heading > div,
+.card-heading > div,
+.dialog-heading > div,
+.guest-organize > *,
+.house-summary > *,
+.trash-row > div {
+  min-width: 0;
+}
+.card-heading,
+.table-footer,
+.compact-actions,
+.backup-actions {
+  flex-wrap: wrap;
+}
+.filter-tabs,
+.room-summaries {
+  min-width: 0;
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+}
+.entry-modal {
+  width: min(32.5rem, calc(100% - 2rem));
+  padding: clamp(1rem, 4vw, 1.75rem);
+}
+.entry-modal .dialog-heading {
+  margin-bottom: 1.25rem;
+}
+.entry-modal .dialog-heading h2 {
+  font-size: clamp(1.125rem, 4vw, 1.375rem);
+}
+.entry-modal form {
+  gap: 1rem;
+}
+.entry-modal label,
+.optional-fields > summary {
+  font-size: 0.875rem;
+}
+.entry-modal input:not([type="checkbox"]),
+.entry-modal select,
+.entry-modal textarea {
+  font-size: 1rem;
+  min-height: 2.75rem;
+}
+.entry-modal .dialog-actions {
+  justify-content: flex-end;
+  margin-top: 0;
+}
+.entry-modal .dialog-actions .button {
+  min-height: 2.75rem;
+  font-size: 0.875rem;
+}
+.optional-fields {
+  border-top: 0.0625rem solid var(--border);
+}
+.optional-fields > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.75rem;
+  color: var(--green);
+  cursor: pointer;
+  list-style: none;
+}
+.optional-fields > summary::-webkit-details-marker {
+  display: none;
+}
+.optional-fields > summary > span {
+  color: #6f7b64;
+  font-size: 0.75rem;
+}
+.optional-fields > summary > .icon {
+  margin-left: auto;
+  width: 1rem;
+  height: 1rem;
+}
+.optional-fields[open] > summary > .icon {
+  transform: rotate(180deg);
+}
+.optional-fields > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.625rem 0 0.25rem;
+}
+@media (max-width: 48.75rem) {
+  .breadcrumb {
+    min-width: 0;
+    overflow: hidden;
+  }
+  .breadcrumb strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .topbar-actions {
+    flex-shrink: 0;
+  }
+  .filter-tabs {
+    overflow-x: auto;
+  }
+  .timeline-content > a,
+  .family-notes,
+  .family-contact,
+  .house-item-info,
+  .table-footer {
+    overflow-wrap: anywhere;
+  }
+}
+@media (max-width: 30rem) {
+  .entry-modal {
+    max-height: 90dvh;
+  }
+  .entry-modal .dialog-actions .button {
+    flex: 1;
+    justify-content: center;
+  }
+}

@@ -7,7 +7,13 @@ import {
   type HouseholdItem,
 } from "../domain/schema.ts";
 import { updateRecord } from "../domain/planning.ts";
-import { Modal, SubmitForm, stringField, numberField } from "./ui.tsx";
+import {
+  Modal,
+  SubmitForm,
+  OptionalFields,
+  stringField,
+  numberField,
+} from "./ui.tsx";
 
 export function FamilyEditor({
   family,
@@ -19,13 +25,13 @@ export function FamilyEditor({
   const { update } = usePlanning();
   return (
     <Modal
-      title={family ? "Editar família" : "Uma família, um convite"}
-      subtitle="Crie o núcleo e depois adicione cada pessoa para acompanhar as respostas individualmente."
+      title={family ? "Editar família" : "Nova família"}
       onClose={onClose}
+      compact
     >
       <SubmitForm
         onClose={onClose}
-        label="Salvar família"
+        label="Salvar"
         onSubmit={async (data) => {
           const record: Family = {
             id: family?.id || newId(),
@@ -41,12 +47,12 @@ export function FamilyEditor({
           await update(
             (current) =>
               updateRecord(current, "families", record, family?.updatedAt),
-            "Família salva. Agora você pode adicionar os membros.",
+            "Família salva.",
           );
         }}
       >
         <label>
-          Nome da família ou núcleo
+          Nome da família
           <input
             name="name"
             defaultValue={family?.name || ""}
@@ -56,7 +62,16 @@ export function FamilyEditor({
             placeholder="Ex.: Família Oliveira"
           />
         </label>
-        <div className="form-grid">
+        <label>
+          WhatsApp / telefone
+          <input
+            name="phone"
+            type="tel"
+            defaultValue={family?.phone || ""}
+            maxLength={80}
+          />
+        </label>
+        <OptionalFields>
           <label>
             Pessoa de contato
             <input
@@ -66,38 +81,24 @@ export function FamilyEditor({
             />
           </label>
           <label>
-            WhatsApp / telefone
+            Mesa
             <input
-              name="phone"
-              type="tel"
-              defaultValue={family?.phone || ""}
+              name="table"
+              defaultValue={family?.table || ""}
               maxLength={80}
+              placeholder="Ex.: Mesa 4"
             />
           </label>
-        </div>
-        <label>
-          Mesa da família (opcional)
-          <input
-            name="table"
-            defaultValue={family?.table || ""}
-            maxLength={80}
-            placeholder="Ex.: Mesa 4"
-          />
-        </label>
-        <label>
-          Observações
-          <textarea
-            name="notes"
-            defaultValue={family?.notes || ""}
-            maxLength={1000}
-            rows={3}
-          />
-        </label>
-        <p className="field-note">
-          Os membros mantêm suas próprias confirmações. Uma mesma pessoa deve
-          aparecer uma única vez; use acompanhantes apenas para pessoas ainda
-          não cadastradas pelo nome.
-        </p>
+          <label>
+            Observações
+            <textarea
+              name="notes"
+              defaultValue={family?.notes || ""}
+              maxLength={1000}
+              rows={2}
+            />
+          </label>
+        </OptionalFields>
       </SubmitForm>
     </Modal>
   );
@@ -113,22 +114,20 @@ export function HouseholdEditor({
   const { plan, update } = usePlanning();
   return (
     <Modal
-      title={
-        item ? "Editar item da nossa casa" : "Mais um detalhe do nosso lar"
-      }
-      subtitle="Registre o que já temos e o que falta comprar, sem gerar uma despesa do casamento."
+      title={item ? "Editar item da casa" : "Novo item da casa"}
       onClose={onClose}
+      compact
     >
       <SubmitForm
         onClose={onClose}
-        label="Salvar item da casa"
+        label="Salvar"
         onSubmit={async (data) => {
           const record: HouseholdItem = {
             id: item?.id || newId(),
             name: stringField(data, "name"),
             updatedAt: nowIso(),
-            room: stringField(data, "room"),
-            category: stringField(data, "category"),
+            room: stringField(data, "room") || "A definir",
+            category: stringField(data, "category") || "Outros",
             quantity: numberField(data, "quantity"),
             ownedQuantity: numberField(data, "ownedQuantity"),
             estimatedUnitAmount: numberField(data, "estimatedUnitAmount"),
@@ -147,7 +146,7 @@ export function HouseholdEditor({
           await update(
             (current) =>
               updateRecord(current, "household", record, item?.updatedAt),
-            "Item salvo na lista da nossa casa.",
+            "Item salvo.",
           );
         }}
       >
@@ -164,62 +163,11 @@ export function HouseholdEditor({
         </label>
         <div className="form-grid">
           <label>
-            Cômodo
-            <input
-              name="room"
-              defaultValue={item?.room || "Cozinha"}
-              list="house-rooms"
-              maxLength={80}
-              required
-            />
-            <datalist id="house-rooms">
-              {[
-                ...new Set([
-                  "Cozinha",
-                  "Quarto",
-                  "Sala",
-                  "Banheiro",
-                  "Lavanderia",
-                  "Escritório",
-                  ...plan.household.map((i) => i.room),
-                ]),
-              ].map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </datalist>
-          </label>
-          <label>
-            Categoria
-            <input
-              name="category"
-              defaultValue={item?.category || "Eletrodomésticos"}
-              list="house-categories"
-              maxLength={80}
-              required
-            />
-            <datalist id="house-categories">
-              {[
-                ...new Set([
-                  "Eletrodomésticos",
-                  "Móveis",
-                  "Utensílios",
-                  "Enxoval",
-                  "Decoração",
-                  "Outros",
-                  ...plan.household.map((i) => i.category),
-                ]),
-              ].map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </datalist>
-          </label>
-        </div>
-        <div className="form-grid">
-          <label>
-            Quantidade que queremos
+            Queremos
             <input
               name="quantity"
               type="number"
+              inputMode="numeric"
               min="1"
               max="10000"
               step="1"
@@ -228,10 +176,11 @@ export function HouseholdEditor({
             />
           </label>
           <label>
-            Quantidade que já temos
+            Já temos
             <input
               name="ownedQuantity"
               type="number"
+              inputMode="numeric"
               min="0"
               max="10000"
               step="1"
@@ -240,103 +189,153 @@ export function HouseholdEditor({
             />
           </label>
         </div>
-        <div className="form-grid">
+        <OptionalFields>
+          <div className="form-grid">
+            <label>
+              Cômodo
+              <input
+                name="room"
+                defaultValue={item?.room || ""}
+                placeholder="A definir"
+                list="house-rooms"
+                maxLength={80}
+              />
+              <datalist id="house-rooms">
+                {[
+                  ...new Set([
+                    "Cozinha",
+                    "Quarto",
+                    "Sala",
+                    "Banheiro",
+                    "Lavanderia",
+                    "Escritório",
+                    ...plan.household.map((i) => i.room),
+                  ]),
+                ].map((v) => (
+                  <option key={v}>{v}</option>
+                ))}
+              </datalist>
+            </label>
+            <label>
+              Categoria
+              <input
+                name="category"
+                defaultValue={item?.category || ""}
+                placeholder="Outros"
+                list="house-categories"
+                maxLength={80}
+              />
+              <datalist id="house-categories">
+                {[
+                  ...new Set([
+                    "Eletrodomésticos",
+                    "Móveis",
+                    "Utensílios",
+                    "Enxoval",
+                    "Decoração",
+                    "Outros",
+                    ...plan.household.map((i) => i.category),
+                  ]),
+                ].map((v) => (
+                  <option key={v}>{v}</option>
+                ))}
+              </datalist>
+            </label>
+          </div>
+          <div className="form-grid">
+            <label>
+              Preço por unidade (R$)
+              <input
+                name="estimatedUnitAmount"
+                type="number"
+                inputMode="decimal"
+                min="0"
+                max="1000000000"
+                step="0.01"
+                defaultValue={item?.estimatedUnitAmount ?? ""}
+                placeholder="Pode preencher depois"
+              />
+            </label>
+            <label>
+              Prioridade
+              <select
+                name="priority"
+                defaultValue={item?.priority || "Importante"}
+              >
+                {["Essencial", "Importante", "Depois"].map((v) => (
+                  <option key={v}>{v}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="form-grid">
+            <label>
+              Etapa da compra
+              <select name="status" defaultValue={item?.status || "A comprar"}>
+                {HOUSEHOLD_STATUSES.map((v) => (
+                  <option key={v}>{v}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Responsável
+              <input
+                name="owner"
+                  defaultValue={item?.owner ?? "Nós"}
+                maxLength={80}
+              />
+            </label>
+          </div>
+          <div className="form-grid">
+            <label>
+              Compra em
+              <input
+                name="purchaseDate"
+                type="date"
+                defaultValue={item?.purchaseDate || ""}
+                min="1900-01-01"
+                max="2100-12-31"
+              />
+            </label>
+            <label>
+              Entrega prevista
+              <input
+                name="deliveryDate"
+                type="date"
+                defaultValue={item?.deliveryDate || ""}
+                min="1900-01-01"
+                max="2100-12-31"
+              />
+            </label>
+          </div>
           <label>
-            Valor unitário estimado (R$)
+            Loja
             <input
-              name="estimatedUnitAmount"
-              type="number"
-              min="0"
-              max="1000000000"
-              step="0.01"
-              required
-              defaultValue={item?.estimatedUnitAmount ?? 0}
+              name="store"
+              defaultValue={item?.store || ""}
+              maxLength={160}
             />
           </label>
           <label>
-            Prioridade
-            <select
-              name="priority"
-              defaultValue={item?.priority || "Importante"}
-            >
-              {["Essencial", "Importante", "Depois"].map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div className="form-grid">
-          <label>
-            Etapa da compra
-            <select name="status" defaultValue={item?.status || "A comprar"}>
-              {HOUSEHOLD_STATUSES.map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Responsável
+            Link do produto
             <input
-              name="owner"
-              defaultValue={item?.owner || "Nós"}
-              maxLength={80}
-            />
-          </label>
-        </div>
-        <div className="form-grid">
-          <label>
-            Compra em
-            <input
-              name="purchaseDate"
-              type="date"
-              defaultValue={item?.purchaseDate || ""}
-              min="1900-01-01"
-              max="2100-12-31"
+              name="url"
+              type="url"
+              defaultValue={item?.url || ""}
+              maxLength={2000}
+              placeholder="https://..."
             />
           </label>
           <label>
-            Entrega prevista
-            <input
-              name="deliveryDate"
-              type="date"
-              defaultValue={item?.deliveryDate || ""}
-              min="1900-01-01"
-              max="2100-12-31"
+            Observações
+            <textarea
+              name="notes"
+              defaultValue={item?.notes || ""}
+              maxLength={1000}
+              rows={2}
             />
           </label>
-        </div>
-        <label>
-          Loja
-          <input
-            name="store"
-            defaultValue={item?.store || ""}
-            maxLength={160}
-          />
-        </label>
-        <label>
-          Link do produto
-          <input
-            name="url"
-            type="url"
-            defaultValue={item?.url || ""}
-            maxLength={2000}
-            placeholder="https://..."
-          />
-        </label>
-        <label>
-          Observações
-          <textarea
-            name="notes"
-            defaultValue={item?.notes || ""}
-            maxLength={1000}
-            rows={3}
-          />
-        </label>
-        <p className="field-note">
-          A estimativa desta lista não altera o orçamento nem os pagamentos do
-          casamento. Itens comprados ou aguardando entrega só entram em “já
-          temos” quando você informa a quantidade recebida.
-        </p>
+        </OptionalFields>
       </SubmitForm>
     </Modal>
   );

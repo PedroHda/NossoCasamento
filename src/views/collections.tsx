@@ -114,7 +114,12 @@ export function Budget({ actions }: { actions: ViewActions }) {
           onQuery={setQuery}
           placeholder="Buscar despesa ou fornecedor..."
         />
-        <div className="table-scroll">
+        <div
+          className="table-scroll"
+          role="region"
+          aria-label="Despesas: deslize a tabela para ver as colunas"
+          tabIndex={0}
+        >
           <table>
             <thead>
               <tr>

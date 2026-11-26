@@ -185,12 +185,14 @@ export function Modal({
   children,
   onClose,
   wide = false,
+  compact = false,
 }: {
   title: string;
   subtitle?: string;
   children: ReactNode;
   onClose: () => void;
   wide?: boolean;
+  compact?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -203,7 +205,9 @@ export function Modal({
   return (
     <dialog
       ref={ref}
-      className={wide ? "wide-modal" : ""}
+      className={[wide ? "wide-modal" : "", compact ? "entry-modal" : ""]
+        .filter(Boolean)
+        .join(" ")}
       aria-labelledby="dialog-title"
       onCancel={(event) => {
         event.preventDefault();
@@ -224,7 +228,7 @@ export function Modal({
     >
       <div className="dialog-heading">
         <div>
-          <span className="eyebrow">CADA DETALHE IMPORTA</span>
+          {!compact && <span className="eyebrow">CADA DETALHE IMPORTA</span>}
           <h2 id="dialog-title">{title}</h2>
           {subtitle && <p>{subtitle}</p>}
         </div>
@@ -341,6 +345,18 @@ export function RowActions({
     </div>
   );
 }
+export function OptionalFields({ children }: { children: ReactNode }) {
+  return (
+    <details className="optional-fields">
+      <summary>
+        Mais detalhes <span>(opcional)</span>
+        <Icon name="down" />
+      </summary>
+      <div>{children}</div>
+    </details>
+  );
+}
+
 export function SubmitForm({
   children,
   onSubmit,
@@ -373,7 +389,16 @@ export function SubmitForm({
     }
   }
   return (
-    <form id={formId} onSubmit={submit}>
+    <form
+      id={formId}
+      onSubmit={submit}
+      onInvalidCapture={(event) => {
+        // Reveal optional fields before the browser focuses an invalid control.
+        event.currentTarget.querySelectorAll("details").forEach((details) => {
+          if (details.contains(event.target as Node)) details.open = true;
+        });
+      }}
+    >
       {children}
       {error && (
         <p className="form-error" role="alert">

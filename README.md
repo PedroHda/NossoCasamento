@@ -6,11 +6,11 @@
 
 ## Android e acesso local
 
-**[Baixar NossoCasamento-2.1.0.apk](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-2.1.0.apk)** · [SHA-256](apk/NossoCasamento-2.1.0.apk.sha256) · [Guia de instalação e compilação](docs/android.md)
+**[Baixar NossoCasamento-2.1.1.apk](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-2.1.1.apk)** · [SHA-256](apk/NossoCasamento-2.1.1.apk.sha256) · [Guia de instalação e compilação](docs/android.md)
 
 O APK inclui a interface e as fontes, funciona sem internet e usa assinatura de debug para instalação direta. Requer Android 7.0+ e WebView/Chrome 110+. Não foi testado em aparelho físico nesta atualização.
 
-**Atualização da v2.0.0:** a chave disponível neste computador é diferente da usada no APK 2.0.0 do repositório. Exporte o backup no app antigo antes de desinstalar; instale a 2.1.0 e importe o JSON. A instalação por cima depende da chave anterior. Nunca apague os dados antes de preservar o backup.
+**Atualização da v2.0.0:** a chave disponível neste computador é diferente da usada no APK 2.0.0 do repositório. Exporte o backup no app antigo antes de desinstalar; instale a 2.1.1 e importe o JSON. A instalação por cima depende da chave anterior. Nunca apague os dados antes de preservar o backup.
 
 ```bash
 git clone https://github.com/PedroHda/NossoCasamento.git
@@ -20,6 +20,16 @@ npm run dev
 ```
 
 Abra o endereço mostrado pelo terminal, normalmente **http://127.0.0.1:5173/**. É necessário **Node.js 22.12+**. Não é preciso banco de dados, chave de API, conta ou arquivo `.env`.
+
+## Ajustes da versão 2.1.1
+
+Os cadastros agora mostram apenas os campos principais. Categoria, contatos extras, estimativas e observações ficam em **Mais detalhes (opcional)**, sem apagar os dados já salvos. É possível cadastrar uma despesa com nome e valor; um convidado, uma família, uma tarefa ou um fornecedor só com o nome; e um item da casa com nome e as quantidades padrão.
+
+No celular, a página fica limitada à largura disponível. As colunas largas continuam acessíveis pela rolagem da própria tabela. Os novos ajustes usam porcentagens e unidades relativas; os campos se reorganizam automaticamente com `auto-fit` e `minmax`, sem depender da resolução de um modelo de celular.
+
+![Cadastro simplificado no celular](docs/preview-simple-form-2.1.1.jpg)
+
+Veja a [validação da versão](docs/validacao-2.1.1.md).
 
 ## Novidades da versão 2.1.0
 

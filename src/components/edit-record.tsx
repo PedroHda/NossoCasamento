@@ -15,7 +15,13 @@ import {
   type TimelineEvent,
 } from "../domain/schema.ts";
 import { updateRecord } from "../domain/planning.ts";
-import { Modal, SubmitForm, stringField, numberField } from "./ui.tsx";
+import {
+  Modal,
+  SubmitForm,
+  OptionalFields,
+  stringField,
+  numberField,
+} from "./ui.tsx";
 
 export function RecordEditor({
   collection,
@@ -57,7 +63,10 @@ export function RecordEditor({
         ...base,
         category: stringField(data, "category") as Expense["category"],
         amount: numberField(data, "amount"),
-        estimatedAmount: numberField(data, "estimatedAmount"),
+        estimatedAmount:
+          stringField(data, "estimatedAmount") === ""
+            ? numberField(data, "amount")
+            : numberField(data, "estimatedAmount"),
         dueDate: stringField(data, "dueDate"),
         vendorId: stringField(data, "vendorId") || null,
         notes: stringField(data, "notes"),
@@ -123,16 +132,8 @@ export function RecordEditor({
     );
   }
   return (
-    <Modal
-      title={title}
-      subtitle="Mais um detalhe do nosso grande dia."
-      onClose={onClose}
-    >
-      <SubmitForm
-        onSubmit={submit}
-        onClose={onClose}
-        label={`Salvar ${names[collection]}`}
-      >
+    <Modal title={title} onClose={onClose} compact>
+      <SubmitForm onSubmit={submit} onClose={onClose} label="Salvar">
         <label>
           {collection === "guests" ? "Nome do convidado" : "Nome / descrição"}
           <input
@@ -143,101 +144,106 @@ export function RecordEditor({
             autoFocus
           />
         </label>
-        {collection !== "guests" && collection !== "timeline" && (
-          <label>
-            Categoria
-            <select
-              name="category"
-              defaultValue={
-                (record as Expense)?.category ||
-                vendor?.category ||
-                CATEGORIES[0]
-              }
-            >
-              {CATEGORIES.map((item) => (
-                <option key={item}>{item}</option>
-              ))}
-            </select>
-          </label>
-        )}
         {collection === "expenses" && (
           <>
-            <div className="form-grid">
+            <label>
+              Valor (R$)
+              <input
+                name="amount"
+                type="number"
+                inputMode="decimal"
+                min="0"
+                max="1000000000"
+                step="0.01"
+                defaultValue={expense?.amount ?? vendor?.quoteAmount ?? ""}
+                required
+              />
+            </label>
+            <OptionalFields>
+              <div className="form-grid">
+                <label>
+                  Categoria
+                  <select
+                    name="category"
+                    defaultValue={
+                      expense?.category || vendor?.category || "Outros"
+                    }
+                  >
+                    {CATEGORIES.map((item) => (
+                      <option key={item}>{item}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Vencimento
+                  <input
+                    type="date"
+                    name="dueDate"
+                    defaultValue={expense?.dueDate || ""}
+                    min="1900-01-01"
+                    max="2100-12-31"
+                  />
+                </label>
+              </div>
               <label>
-                Valor estimado (R$)
+                Estimativa inicial (R$)
                 <input
                   name="estimatedAmount"
                   type="number"
+                  inputMode="decimal"
                   min="0"
                   max="1000000000"
                   step="0.01"
                   defaultValue={
                     expense?.estimatedAmount ?? vendor?.quoteAmount ?? ""
                   }
-                  required
+                  placeholder="Usar o valor da despesa"
                 />
               </label>
               <label>
-                Valor contratado (R$)
-                <input
-                  name="amount"
-                  type="number"
-                  min="0"
-                  max="1000000000"
-                  step="0.01"
-                  defaultValue={expense?.amount ?? vendor?.quoteAmount ?? ""}
-                  required
+                Fornecedor
+                <select
+                  name="vendorId"
+                  defaultValue={expense?.vendorId || vendorId || ""}
+                >
+                  <option value="">Sem fornecedor</option>
+                  {expense?.vendorId &&
+                    !plan.vendors.some(
+                      (item) => item.id === expense.vendorId,
+                    ) && (
+                      <option value={expense.vendorId}>
+                        Fornecedor na lixeira
+                      </option>
+                    )}
+                  {plan.vendors.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Observações
+                <textarea
+                  name="notes"
+                  rows={2}
+                  maxLength={1000}
+                  defaultValue={expense?.notes || ""}
                 />
               </label>
-            </div>
-            <label>
-              Fornecedor vinculado
-              <select
-                name="vendorId"
-                defaultValue={expense?.vendorId || vendorId || ""}
-              >
-                <option value="">Sem fornecedor</option>
-                {expense?.vendorId &&
-                  !plan.vendors.some(
-                    (item) => item.id === expense.vendorId,
-                  ) && (
-                    <option value={expense.vendorId}>
-                      Fornecedor na lixeira
-                    </option>
-                  )}
-                {plan.vendors.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Vencimento do saldo
-              <input
-                type="date"
-                name="dueDate"
-                defaultValue={expense?.dueDate || ""}
-                min="1900-01-01"
-                max="2100-12-31"
-              />
-            </label>
-            <p className="field-note">
-              Depois de salvar, abra “Pagamentos e parcelas” para registrar
-              pagamentos ou dividir o saldo.
-            </p>
+            </OptionalFields>
           </>
         )}
         {collection === "guests" && (
           <>
-            <div className="form-grid">
+            {(plan.families.length > 0 || guest?.familyId) && (
               <label>
-                Família / núcleo
+                Família
                 <select
                   name="familyId"
                   defaultValue={guest?.familyId || familyId || ""}
                 >
-                  <option value="">Convite individual / sem família</option>
+                  <option value="">Sem família</option>
                   {guest?.familyId &&
                     !plan.families.some((f) => f.id === guest.familyId) && (
                       <option value={guest.familyId}>Família na lixeira</option>
@@ -249,88 +255,97 @@ export function RecordEditor({
                   ))}
                 </select>
               </label>
+            )}
+            <label>
+              Presença
+              <select name="status" defaultValue={guest?.status || "Pendente"}>
+                {GUEST_STATUSES.map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+            </label>
+            <OptionalFields>
               <label>
-                Mesa (opcional)
+                Telefone
                 <input
-                  name="table"
+                  name="phone"
+                  type="tel"
+                  defaultValue={guest?.phone || ""}
                   maxLength={80}
-                  defaultValue={guest?.table || ""}
-                  placeholder="Vazio = mesa da família"
                 />
               </label>
-            </div>
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                name="child"
-                defaultChecked={guest?.child || false}
-              />{" "}
-              Convidado infantil
-            </label>
-            <div className="form-grid">
-              <label>
-                Grupo
-                <select name="group" defaultValue={guest?.group || "Família"}>
-                  {GUEST_GROUPS.map((item) => (
-                    <option key={item}>{item}</option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Limite de acompanhantes
+              <div className="form-grid">
+                <label>
+                  Acompanhantes permitidos
+                  <input
+                    name="companions"
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    max="20"
+                    step="1"
+                    defaultValue={guest?.companions || 0}
+                  />
+                </label>
+                <label>
+                  Acompanhantes confirmados
+                  <input
+                    name="confirmedCompanions"
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    max="20"
+                    step="1"
+                    defaultValue={guest?.confirmedCompanions ?? ""}
+                    placeholder="Mesmo limite"
+                  />
+                </label>
+              </div>
+              <label className="checkbox-label">
                 <input
-                  name="companions"
-                  type="number"
-                  min="0"
-                  max="20"
-                  step="1"
-                  defaultValue={guest?.companions || 0}
-                  required
+                  type="checkbox"
+                  name="child"
+                  defaultChecked={guest?.child || false}
                 />
+                Criança
               </label>
-            </div>
-            <div className="form-grid">
+              <div className="form-grid">
+                <label>
+                  Grupo
+                  <select name="group" defaultValue={guest?.group || "Família"}>
+                    {GUEST_GROUPS.map((item) => (
+                      <option key={item}>{item}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Mesa
+                  <input
+                    name="table"
+                    maxLength={80}
+                    defaultValue={guest?.table || ""}
+                    placeholder="Usar mesa da família"
+                  />
+                </label>
+              </div>
               <label>
-                Confirmação
-                <select
-                  name="status"
-                  defaultValue={guest?.status || "Pendente"}
-                >
-                  {GUEST_STATUSES.map((item) => (
-                    <option key={item}>{item}</option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Acompanhantes confirmados
+                Restrições alimentares
                 <input
-                  name="confirmedCompanions"
-                  type="number"
-                  min="0"
-                  max="20"
-                  step="1"
-                  defaultValue={guest?.confirmedCompanions ?? ""}
-                  placeholder="Vazio = limite do convite"
+                  name="dietary"
+                  defaultValue={guest?.dietary || ""}
+                  maxLength={300}
                 />
               </label>
-            </div>
-            <label>
-              Contato
-              <input
-                name="phone"
-                defaultValue={guest?.phone || ""}
-                maxLength={80}
-              />
-            </label>
-            <label>
-              Restrições alimentares
-              <input
-                name="dietary"
-                defaultValue={guest?.dietary || ""}
-                maxLength={300}
-                placeholder="Ex.: vegetariano, alergia a amendoim"
-              />
-            </label>
+              <label>
+                Observações
+                <textarea
+                  name="notes"
+                  rows={2}
+                  maxLength={1000}
+                  defaultValue={guest?.notes || ""}
+                />
+              </label>
+            </OptionalFields>
           </>
         )}
         {collection === "tasks" && (
@@ -345,102 +360,111 @@ export function RecordEditor({
                 max="2100-12-31"
               />
             </label>
-            <div className="form-grid">
+            <OptionalFields>
               <label>
-                Responsável
-                <input
-                  name="owner"
-                  maxLength={80}
-                  defaultValue={task?.owner || "Nós"}
-                />
-              </label>
-              <label>
-                Prioridade
+                Categoria
                 <select
-                  name="priority"
-                  defaultValue={task?.priority || "Normal"}
+                  name="category"
+                  defaultValue={task?.category || "Outros"}
                 >
-                  <option>Normal</option>
-                  <option>Alta</option>
-                </select>
-              </label>
-            </div>
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                name="done"
-                defaultChecked={task?.done || false}
-              />{" "}
-              Tarefa concluída
-            </label>
-          </>
-        )}
-        {collection === "vendors" && (
-          <>
-            <div className="form-grid">
-              <label>
-                Proposta (R$)
-                <input
-                  name="quoteAmount"
-                  type="number"
-                  min="0"
-                  max="1000000000"
-                  step="0.01"
-                  defaultValue={supplier?.quoteAmount ?? ""}
-                />
-              </label>
-              <label>
-                Etapa
-                <select
-                  name="status"
-                  defaultValue={supplier?.status || "Em pesquisa"}
-                >
-                  {VENDOR_STATUSES.map((item) => (
+                  {CATEGORIES.map((item) => (
                     <option key={item}>{item}</option>
                   ))}
                 </select>
               </label>
-            </div>
+              <div className="form-grid">
+                <label>
+                  Responsável
+                  <input
+                    name="owner"
+                    maxLength={80}
+                    defaultValue={task?.owner ?? "Nós"}
+                  />
+                </label>
+                <label>
+                  Prioridade
+                  <select
+                    name="priority"
+                    defaultValue={task?.priority || "Normal"}
+                  >
+                    <option>Normal</option>
+                    <option>Alta</option>
+                  </select>
+                </label>
+              </div>
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  name="done"
+                  defaultChecked={task?.done || false}
+                />
+                Tarefa concluída
+              </label>
+            </OptionalFields>
+          </>
+        )}
+        {collection === "vendors" && (
+          <>
             <label>
               Contato
               <input
                 name="contact"
                 maxLength={200}
                 defaultValue={supplier?.contact || ""}
-                placeholder="Telefone, e-mail ou @instagram"
+                placeholder="Telefone, e-mail ou Instagram"
               />
             </label>
+            <OptionalFields>
+              <label>
+                Categoria
+                <select
+                  name="category"
+                  defaultValue={supplier?.category || "Outros"}
+                >
+                  {CATEGORIES.map((item) => (
+                    <option key={item}>{item}</option>
+                  ))}
+                </select>
+              </label>
+              <div className="form-grid">
+                <label>
+                  Proposta (R$)
+                  <input
+                    name="quoteAmount"
+                    type="number"
+                    inputMode="decimal"
+                    min="0"
+                    max="1000000000"
+                    step="0.01"
+                    defaultValue={supplier?.quoteAmount ?? ""}
+                  />
+                </label>
+                <label>
+                  Etapa
+                  <select
+                    name="status"
+                    defaultValue={supplier?.status || "Em pesquisa"}
+                  >
+                    {VENDOR_STATUSES.map((item) => (
+                      <option key={item}>{item}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <label>
+                Observações
+                <textarea
+                  name="notes"
+                  rows={2}
+                  maxLength={1000}
+                  defaultValue={supplier?.notes || ""}
+                />
+              </label>
+            </OptionalFields>
           </>
         )}
         {collection === "timeline" && (
           <>
-            <div className="form-grid">
-              <label>
-                Duração (minutos)
-                <input
-                  name="durationMinutes"
-                  type="number"
-                  min="5"
-                  max="1440"
-                  defaultValue={event?.durationMinutes ?? 60}
-                  required
-                />
-              </label>
-              <label>
-                Avisar antes
-                <select
-                  name="reminderMinutes"
-                  defaultValue={event?.reminderMinutes ?? ""}
-                >
-                  <option value="">Usar antecedência geral</option>
-                  <option value="0">No horário</option>
-                  <option value="60">1 hora antes</option>
-                  <option value="1440">1 dia antes</option>
-                  <option value="4320">3 dias antes</option>
-                  <option value="10080">7 dias antes</option>
-                </select>
-              </label>
-            </div>
             <div className="form-grid">
               <label>
                 Data
@@ -454,7 +478,7 @@ export function RecordEditor({
                 />
               </label>
               <label>
-                Horário de Brasília
+                Horário
                 <input
                   type="time"
                   name="time"
@@ -463,26 +487,62 @@ export function RecordEditor({
                 />
               </label>
             </div>
-            <label>
-              Local
-              <input
-                name="location"
-                maxLength={200}
-                defaultValue={event?.location || plan.settings.location}
-              />
-            </label>
+            <OptionalFields>
+              <label>
+                Local
+                <input
+                  name="location"
+                  maxLength={200}
+                  defaultValue={event?.location ?? plan.settings.location}
+                />
+              </label>
+              <div className="form-grid">
+                <label>
+                  Duração (minutos)
+                  <input
+                    name="durationMinutes"
+                    type="number"
+                    inputMode="numeric"
+                    min="5"
+                    max="1440"
+                    defaultValue={event?.durationMinutes ?? 60}
+                    required
+                  />
+                </label>
+                <label>
+                  Avisar antes
+                  <select
+                    name="reminderMinutes"
+                    defaultValue={event?.reminderMinutes ?? ""}
+                  >
+                    <option value="">Usar antecedência geral</option>
+                    <option value="0">No horário</option>
+                    <option value="60">1 hora antes</option>
+                    <option value="1440">1 dia antes</option>
+                    <option value="4320">3 dias antes</option>
+                    <option value="10080">7 dias antes</option>
+                    {event?.reminderMinutes != null &&
+                      ![0, 60, 1440, 4320, 10080].includes(
+                        event.reminderMinutes,
+                      ) && (
+                        <option value={event.reminderMinutes}>
+                          {event.reminderMinutes} minutos antes
+                        </option>
+                      )}
+                  </select>
+                </label>
+              </div>
+              <label>
+                Observações
+                <textarea
+                  name="notes"
+                  rows={2}
+                  maxLength={1000}
+                  defaultValue={event?.notes || ""}
+                />
+              </label>
+            </OptionalFields>
           </>
-        )}
-        {collection !== "tasks" && (
-          <label>
-            Observações
-            <textarea
-              name="notes"
-              rows={3}
-              maxLength={1000}
-              defaultValue={(record as Expense)?.notes || ""}
-            />
-          </label>
         )}
       </SubmitForm>
     </Modal>

@@ -3,6 +3,7 @@ import { useEffect, useState, Component, type ReactNode } from "react";
 import "./style.css";
 import "./improvements.css";
 import "./organizer.css";
+import "./mobile-forms.css";
 import { App } from "./app/App.tsx";
 import { PlanningProvider } from "./app/context.tsx";
 import { PublicRsvp } from "./components/invitations.tsx";

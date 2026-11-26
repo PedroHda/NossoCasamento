@@ -14,6 +14,7 @@ import { readAttachment, downloadAttachment } from "../services/files.ts";
 import {
   Modal,
   SubmitForm,
+  OptionalFields,
   stringField,
   numberField,
   Icon,
@@ -260,25 +261,27 @@ export function ExpenseDetails({
                     />
                   </label>
                 </div>
-                <label>
-                  Observação
-                  <input
-                    name="note"
-                    maxLength={300}
-                    placeholder="Ex.: sinal por Pix"
-                  />
-                </label>
-                <label>
-                  Comprovante opcional
-                  <input
-                    type="file"
-                    name="receipt"
-                    accept="application/pdf,image/png,image/jpeg"
-                  />
-                  <small>
-                    PDF, PNG ou JPG de até 500 KB. Limite local total: 1,5 MB.
-                  </small>
-                </label>
+                <OptionalFields>
+                  <label>
+                    Observação
+                    <input
+                      name="note"
+                      maxLength={300}
+                      placeholder="Ex.: sinal por Pix"
+                    />
+                  </label>
+                  <label>
+                    Comprovante opcional
+                    <input
+                      type="file"
+                      name="receipt"
+                      accept="application/pdf,image/png,image/jpeg"
+                    />
+                    <small>
+                      PDF, PNG ou JPG de até 500 KB. Limite local total: 1,5 MB.
+                    </small>
+                  </label>
+                </OptionalFields>
               </SubmitForm>
             </div>
           )}
