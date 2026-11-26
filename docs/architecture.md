@@ -67,4 +67,6 @@ Supabase/PostgreSQL pode ser avaliado nessa etapa. Nenhum SDK, SQL, segredo ou p
 
 ## Validação atual
 
+Na versão 2.2, o catálogo estático `household-prices.ts` guarda preços e fontes da pesquisa. `applyHouseholdResearch` inclui a lista autorizada sem alterar despesas, mantém preços próprios e quantidades recebidas, respeita a lixeira e registra o lote em `appliedHouseholdResearch` (campo com padrão vazio em backups anteriores). A abertura grava com revisão e repete a leitura em caso de conflito entre abas. O reset preserva o marcador para impedir reinclusão silenciosa; uma reposição explícita fica no painel de pesquisa. Não há consultas de preço em segundo plano nem sincronização remota.
+
 Os testes cobrem migração, revisões, corrupção, falha de cota, referências, parcelas, totais, agenda, convites e exportações textuais. A compilação TypeScript confere o contrato entre camadas. Permissões/notificações Android precisam ser verificadas em aparelhos reais antes de distribuição definitiva.

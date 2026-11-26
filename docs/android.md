@@ -1,28 +1,28 @@
 # Nosso Casamento para Android
 
-**[Baixar NossoCasamento-2.1.1.apk](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-2.1.1.apk)** · [Checksum SHA-256](../apk/NossoCasamento-2.1.1.apk.sha256)
+**[Baixar NossoCasamento-2.2.0.apk](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-2.2.0.apk)** · [Checksum SHA-256](../apk/NossoCasamento-2.2.0.apk.sha256)
 
 Os arquivos seguem o padrão `NossoCasamento-<versão>.apk`, sem prefixo `v` ou sufixo no nome. O script de compilação lê a versão do `package.json` e gera o APK e seu `.sha256` com esse padrão.
 
-A versão 2.1.1 simplifica os cadastros e contém a rolagem horizontal das tabelas dentro da tela. Mantém o pacote e a mesma assinatura da 2.1.0, permitindo atualizar essa versão sem reinstalar. Exporte um backup antes de atualizar.
+A versão 2.2.0 inclui a lista da casa pesquisada em 26/11/2026: 16 grupos, 21 unidades e R$ 12.570,00 de referência. Preserva os cadastros existentes e acrescenta a lista uma única vez. Mantém o pacote e a mesma assinatura da série 2.1, permitindo atualizar essas versões sem reinstalar. Exporte um backup antes de atualizar.
 
 Inclui contagem inicial para **24/07/2027**, agora com data e horário editáveis, orçamento, pagamentos, parcelas, comprovantes, convidados, checklist, fornecedores, cronograma, relatórios e lembretes. A interface e as fontes estão incorporadas e abrem sem internet.
 
 ## Instalar
 
 1. Se já usa o app, exporte o backup em Configurações e guarde o JSON fora dele.
-2. Baixe `NossoCasamento-2.1.1.apk` no Android.
+2. Baixe `NossoCasamento-2.2.0.apk` no Android.
 3. Abra o arquivo pelo download ou gerenciador.
 4. Se solicitado, permita a instalação pela origem usada e confirme.
 5. Abra **Nosso Casamento**, com o ícone de alianças, e importe o backup se reinstalou.
 
-Requisitos: **Android 7.0+** e **WebView/Chrome 110+**. A assinatura é **debug**, para instalação direta. A versão 2.1.1 mantém `io.github.pedrohda.nossocasamento`, com `versionCode 4`.
+Requisitos: **Android 7.0+** e **WebView/Chrome 110+**. A assinatura é **debug**, para instalação direta. A versão 2.2.0 mantém `io.github.pedrohda.nossocasamento`, com `versionCode 5`.
 
-**A assinatura é diferente do APK 2.0.0 que está no repositório.** A chave anterior não estava disponível neste computador. O Android pode recusar a atualização por cima; nesse caso, exporte o backup no aplicativo antigo, guarde o arquivo fora dele e só então desinstale, instale a 2.1.1 e importe o backup. A chave privada deste build não está no Git. Para versões seguintes, preserve essa chave fora do repositório ou adote uma chave release estável com uma transição planejada.
+**A assinatura é diferente do APK 2.0.0 que está no repositório.** A chave anterior não estava disponível neste computador. O Android pode recusar a atualização por cima; nesse caso, exporte o backup no aplicativo antigo, guarde o arquivo fora dele e só então desinstale, instale a 2.2.0 e importe o backup. A chave privada deste build não está no Git. Para versões seguintes, preserve essa chave fora do repositório ou adote uma chave release estável com uma transição planejada.
 
 ## Armazenamento e backup
 
-Os dados ficam no `localStorage` da WebView, separados do navegador e de outros celulares. Não há banco, login ou sincronização remota. O primeiro acesso usa exemplos, ou migra os dados v1 existentes no mesmo armazenamento. A migração preserva a chave anterior e transforma os saldos pagos em lançamentos sem inventar datas.
+Os dados ficam no `localStorage` da WebView, separados do navegador e de outros celulares. Não há banco, login ou sincronização remota. Em uma instalação nova, o casamento começa vazio e a lista pesquisada da casa já está disponível. Em uma atualização, os dados atuais são mantidos; a lista nova preenche estimativas zeradas sem substituir preços próprios. Dados v1 existentes no mesmo armazenamento são migrados, preservando a chave anterior e transformando os saldos pagos em lançamentos sem inventar datas.
 
 Fechar o aplicativo mantém os dados; limpar dados/desinstalar pode apagá-los. Em **Configurações → Exportar backup**, o compartilhamento do Android permite guardar o JSON. A importação aceita v1/v2 até 6 MB e pede confirmação antes de substituir. Comprovantes e lixeira fazem parte do backup. Os limites de arquivo estão no [README](../README.md).
 
@@ -58,7 +58,7 @@ npm test
 npm run android:apk
 ```
 
-Se necessário, defina `JAVA_HOME` e `ANDROID_HOME`. O script detecta locais comuns, incluindo o JDK do Android Studio, e usa o Gradle wrapper. A saída é `releases/NossoCasamento-2.1.1.apk` e seu `.sha256`. Para abrir no Android Studio:
+Se necessário, defina `JAVA_HOME` e `ANDROID_HOME`. O script detecta locais comuns, incluindo o JDK do Android Studio, e usa o Gradle wrapper. A saída é `releases/NossoCasamento-2.2.0.apk` e seu `.sha256`. Para abrir no Android Studio:
 
 ```bash
 npm run android:sync

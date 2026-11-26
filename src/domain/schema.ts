@@ -361,6 +361,7 @@ export const planSchema = z
     guests: z.array(guestSchema).max(10000),
     families: z.array(familySchema).max(2000).default([]),
     household: z.array(householdSchema).max(10000).default([]),
+    appliedHouseholdResearch: z.array(identifier).max(100).default([]),
     tasks: z.array(taskSchema).max(10000),
     vendors: z.array(vendorSchema).max(10000),
     timeline: z.array(eventSchema).max(10000),

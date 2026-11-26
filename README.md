@@ -6,11 +6,11 @@
 
 ## Android e acesso local
 
-**[Baixar NossoCasamento-2.1.1.apk](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-2.1.1.apk)** · [SHA-256](apk/NossoCasamento-2.1.1.apk.sha256) · [Guia de instalação e compilação](docs/android.md)
+**[Baixar NossoCasamento-2.2.0.apk](https://github.com/PedroHda/NossoCasamento/raw/refs/heads/master/apk/NossoCasamento-2.2.0.apk)** · [SHA-256](apk/NossoCasamento-2.2.0.apk.sha256) · [Guia de instalação e compilação](docs/android.md)
 
 O APK inclui a interface e as fontes, funciona sem internet e usa assinatura de debug para instalação direta. Requer Android 7.0+ e WebView/Chrome 110+. Não foi testado em aparelho físico nesta atualização.
 
-**Atualização da v2.0.0:** a chave disponível neste computador é diferente da usada no APK 2.0.0 do repositório. Exporte o backup no app antigo antes de desinstalar; instale a 2.1.1 e importe o JSON. A instalação por cima depende da chave anterior. Nunca apague os dados antes de preservar o backup.
+**Atualização da v2.0.0:** a chave disponível neste computador é diferente da usada no APK 2.0.0 do repositório. Exporte o backup no app antigo antes de desinstalar; instale a 2.2.0 e importe o JSON. A instalação por cima depende da chave anterior. Nunca apague os dados antes de preservar o backup.
 
 ```bash
 git clone https://github.com/PedroHda/NossoCasamento.git
@@ -20,6 +20,16 @@ npm run dev
 ```
 
 Abra o endereço mostrado pelo terminal, normalmente **http://127.0.0.1:5173/**. É necessário **Node.js 22.12+**. Não é preciso banco de dados, chave de API, conta ou arquivo `.env`.
+
+## Lista da casa na versão 2.2.0
+
+A lista solicitada já vem no APK: **16 grupos, 21 unidades e R$ 12.570,00 estimados**, incluindo quatro cortinas de aproximadamente 3 m de altura e três luminárias. A pesquisa considera 220 V/bivolt, robô com mapeamento laser, ar-condicionado inverter com Wi-Fi e armário de madeira maciça da Arte Velha. [Preços, cálculos e fontes](docs/pesquisa-casa-2026-11-26.md) · [Totais em CSV](docs/pesquisa-casa-2026-11-26.csv).
+
+Na atualização, os itens são acrescentados uma única vez: IDs, preços próprios, observações, quantidades recebidas e itens na lixeira são preservados. Estimativas zeradas recebem o valor pesquisado. Cortinas/luminárias existentes contam para a quantidade solicitada, inclusive quando estão em cadastros separados. Na tela **Nossa casa**, abra **Pesquisa de preços** para ver os valores unitários, os totais, as premissas e os links das ofertas.
+
+O total da pesquisa considera todos os itens por comprar; o saldo real da lista desconta o que vocês já têm e usa os valores editados. Fretes, trilhos/varões e instalações não estão incluídos. Os preços são referências de 26/11/2026, sem atualização automática.
+
+Uma instalação nova começa com o planejamento do casamento vazio e a lista pesquisada. **Começar do zero** continua limpando os cadastros; o painel da pesquisa permite adicionar os itens ausentes quando desejado. O botão de dados de exemplo permanece disponível nas configurações.
 
 ## Ajustes da versão 2.1.1
 
@@ -65,7 +75,7 @@ A interface inclui busca global pelo botão ou atalho `/`, filtros, formulários
 
 ## Começar a usar
 
-1. Explore os **dados de exemplo**, que são fictícios.
+1. Abra **Nossa casa** para consultar os itens pesquisados e marcar o que já têm. Os exemplos fictícios do casamento podem ser carregados em Configurações, se desejar.
 2. Em **Configurações**, personalize o casal, a data, o horário, o local e as metas.
 3. Use **Começar do zero** para remover exemplos e lixeira, preservando as preferências. Exporte uma cópia antes se já fez alterações.
 4. Cadastre fornecedores e despesas; abra **Pagamentos e parcelas** na despesa para registrar o histórico.

@@ -187,3 +187,69 @@ body {
     justify-content: center;
   }
 }
+.house-price-research {
+  margin-block: 1rem 1.5rem;
+  min-inline-size: 0;
+}
+.house-price-research > summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1rem;
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.875rem;
+}
+.house-price-research > summary::-webkit-details-marker {
+  display: none;
+}
+.house-price-research > summary > span {
+  flex: 1 1 12rem;
+}
+.house-research-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0 1rem 1rem;
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+.house-research-content > small {
+  color: #6f7b64;
+}
+.house-price-research th,
+.house-price-research td {
+  font-size: 0.875rem;
+  vertical-align: top;
+}
+.house-price-research td:first-child {
+  min-inline-size: 13rem;
+  max-inline-size: 19rem;
+  white-space: normal;
+}
+.house-price-research td:last-child {
+  white-space: normal;
+  min-inline-size: 12rem;
+  max-inline-size: 23rem;
+}
+.house-price-research td small,
+.house-price-research td strong {
+  display: block;
+}
+.house-price-research td small {
+  margin-block-start: 0.3rem;
+  font-size: 0.75rem;
+}
+.house-price-research td p {
+  margin-block: 0.5rem;
+}
+.house-price-research td a {
+  text-decoration: underline;
+}
+.house-price-research td ul {
+  padding-inline-start: 1rem;
+}
+.house-price-research td li {
+  margin-block: 0.75rem;
+}

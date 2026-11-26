@@ -19,6 +19,7 @@ import {
 } from "../components/ui.tsx";
 import { saveText } from "../services/files.ts";
 import { csvCell } from "../services/exports.ts";
+import { HouseholdResearch } from "../components/household-research.tsx";
 export function BudgetNavigation({ house = false }: { house?: boolean }) {
   return (
     <nav className="planning-tabs" aria-label="Casamento e nossa casa">
@@ -111,6 +112,7 @@ export function Household({ actions }: { actions: ViewActions }) {
         Esta é a lista da casa. Os valores são estimativas do que falta e não
         entram como dívida no orçamento do casamento.
       </p>
+      <HouseholdResearch />
       {summary.rooms.length > 0 && (
         <div className="room-summaries">
           {summary.rooms.map((r) => (
@@ -151,6 +153,8 @@ export function Household({ actions }: { actions: ViewActions }) {
                       "Estimativa do que falta",
                       "Prioridade",
                       "Entrega",
+                      "Valor unitário estimado",
+                      "Total planejado do item",
                     ],
                     ...rows.map((i) => [
                       i.name,
@@ -163,6 +167,8 @@ export function Household({ actions }: { actions: ViewActions }) {
                       money(i.estimatedUnitAmount * missingQuantity(i)),
                       i.priority,
                       i.deliveryDate,
+                      money(i.estimatedUnitAmount),
+                      money(i.estimatedUnitAmount * i.quantity),
                     ]),
                   ]
                     .map((row) => row.map(csvCell).join(";"))
@@ -244,6 +250,10 @@ export function Household({ actions }: { actions: ViewActions }) {
                   {money(item.estimatedUnitAmount * missingQuantity(item))}
                 </strong>
                 <small>estimativa do que falta · {item.priority}</small>
+                <small>
+                  {money(item.estimatedUnitAmount)} cada × {item.quantity} ={" "}
+                  {money(item.estimatedUnitAmount * item.quantity)} planejados
+                </small>
                 {item.deliveryDate && (
                   <span>
                     <Icon name="calendar" /> Entrega:{" "}

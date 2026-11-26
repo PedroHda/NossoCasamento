@@ -16,6 +16,8 @@ import { saveText } from "../services/files.ts";
 import { syncCalendar } from "../services/calendar.ts";
 import { App as NativeApp } from "@capacitor/app";
 import { isNative } from "../services/files.ts";
+import { applyHouseholdResearch } from "../domain/household-research.ts";
+import { ensureHouseholdResearch } from "../services/household-research.ts";
 
 interface Notice {
   message: string;
@@ -78,13 +80,17 @@ export function PlanningProvider({
         let initial = loaded;
         if (!initial) {
           try {
-            initial = await repository.save(createPlan(), 0);
+            initial = await repository.save(
+              applyHouseholdResearch(createPlan(true)),
+              0,
+            );
           } catch (error) {
             if (!(error instanceof RevisionConflictError)) throw error;
             initial = await repository.load();
             if (!initial) throw error;
           }
         }
+        initial = await ensureHouseholdResearch(repository, initial);
         if (mounted) {
           accept(initial);
           setLoadError("");
@@ -235,7 +241,9 @@ export function PlanningProvider({
     saving.current = true;
     setBusy(true);
     try {
-      const saved = await services.current!.repository.replace(imported);
+      const saved = await services.current!.repository.replace(
+        applyHouseholdResearch(imported),
+      );
       accept(saved);
       setLoadError("");
       notify(message);
